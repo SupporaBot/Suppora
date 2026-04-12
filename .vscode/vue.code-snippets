@@ -1,0 +1,47 @@
+{
+	"Vue Base Template":{
+		"prefix": "!v",
+		"scope": "vue,Vue",
+		"body": [
+			"<script lang=\"ts\" setup>",
+			"    ",
+			"</script>",
+			"",
+			"",
+			"<template>",
+			"    <div class=\"flex-center\">",
+			"        $1",
+			"    </div>",
+			"</template>",
+			"",
+			"",
+			"<style scoped>",
+			"    ",
+			"</style>",
+		]
+	},
+
+	"Vue Page Template": {
+		"prefix": "!vp",
+		"scope": "vue,Vue",
+		"body": [
+			"<script lang=\"ts\" setup>",
+			"    ",
+			"</script>",
+			"",
+			"",
+			"<template>",
+			"    <main class=\"flex-center w-full grow bg-brand-1/25\">",
+			"        <div>",
+			"            Content Here$1",
+			"        </div>",
+			"    </main>",
+			"</template>",
+			"",
+			"",
+			"<style scoped>",
+			"    /*@reference \"@/styles/main.css\"; */",
+			"</style>",
+		]
+	}
+}

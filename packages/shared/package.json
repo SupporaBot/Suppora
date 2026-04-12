@@ -1,0 +1,11 @@
+{
+  "name": "@suppora/shared",
+  "version": "1.0.0",
+  "description": "A shared package to be used within Suppora applications.",
+  "type": "module",
+  "main": "src/index.ts",
+  "private": true,
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}

@@ -1,0 +1,26 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap');
+
+@import './tailwind.css';
+@import './color-theme.css';
+@import './animations.css';
+
+
+/* App/Body Styles */
+html,
+body {
+    background: var(--c-bg-1);
+    color: var(--c-text-1);
+    box-sizing: border-box;
+    position: relative;
+    height: 100vh;
+}
+
+#app {
+    /* background: radial-gradient(circle at center, hsl(102, 42%, 19%) 0%, hsl(103, 44%, 11%) 60%); */
+    @apply min-h-full w-full max-w-full flex flex-col flex-wrap flex-1 relative font-default;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    min-height: 100dvh;
+}

@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "es2022",
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "moduleResolution": "bundler",
+        "sourceMap": true,
+
+        "paths": {
+            "@suppora/shared": ["./packages/shared"]
+        }
+    }
+}

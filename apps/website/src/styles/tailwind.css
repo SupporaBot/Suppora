@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+    /* Background Color Shades */
+    --color-bg-1: var(--c-bg-1);
+    --color-bg-2: var(--c-bg-2);
+    --color-bg-3: var(--c-bg-3);
+    --color-bg-4: var(--c-bg-4);
+    --color-bg-5: var(--c-bg-5);
+
+    /* Text Color Shades */
+    --color-text-1: var(--c-text-1);
+    --color-text-2: var(--c-text-2);
+    --color-text-3: var(--c-text-3);
+
+    /* Ring/Border Color Shades */
+    --color-ring-1: var(--c-ring-1);
+    --color-ring-2: var(--c-ring-2);
+    --color-ring-3: var(--c-ring-3);
+
+    /* Brand Color Shades */
+    --color-brand-1: var(--c-brand-1);
+    --color-brand-2: var(--c-brand-2);
+    --color-brand-3: var(--c-brand-3);
+
+    /* Custom Color Shades */
+    --color-info-1: var(--c-info-1);
+    --color-info-2: var(--c-info-2);
+    --color-info-3: var(--c-info-3);
+
+    --color-success-1: var(--c-success-1);
+    --color-success-2: var(--c-success-2);
+    --color-success-3: var(--c-success-3);
+
+    --color-warning-1: var(--c-warning-1);
+    --color-warning-2: var(--c-warning-2);
+    --color-warning-3: var(--c-warning-3);
+
+    --color-danger-1: var(--c-danger-1);
+    --color-danger-2: var(--c-danger-2);
+    --color-danger-3: var(--c-danger-3);
+
+    /* Custom Font Family */
+    --font-default: 'Alan Sans'
+}
+
+/* Custom Utilities */
+@utility flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+
+
+/* Button Utilities */
+
+
+
+
+@utility button-base {
+    @apply flex-center bg-bg-2 px-1.75 py-0.75 rounded-md ring-2 ring-ring-2 font-medium text-sm cursor-pointer transition-all;
+
+    &:hover {
+        @apply !ring-ring-1;
+    }
+    
+}
+
+
+@utility button-outline {
+    @apply button-base !bg-bg-2 ;
+}
+
+@utility button-dynamic {
+    @apply button-base !bg-transparent  !ring-0;
+
+    &:hover {
+        @apply !bg-bg-2 !ring-2;
+    }
+}
+
+
+@utility button-info {
+    @apply button-base dark:bg-info-2 bg-[color-mix(in_hsl,var(--c-info-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
+
+    &.button-outline {
+        @apply dark:!ring-info-2 !ring-info-1;
+    }
+
+    &.button-dynamic {
+        @apply hover:!ring-info-1;
+    }
+
+    &:hover {
+        @apply dark:bg-info-1 bg-[color-mix(in_hsl,var(--c-info-2),var(--c-bg-1)_20%)];
+
+        &.button-outline,
+        &.button-dynamic {
+            @apply dark:!ring-info-1 !ring-info-2;
+        }
+    }
+}
+@utility button-success {
+    @apply button-base dark:bg-success-2 bg-[color-mix(in_hsl,var(--c-success-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
+
+    &.button-outline {
+        @apply dark:!ring-success-2 !ring-success-1;
+    }
+
+    &.button-dynamic {
+        @apply hover:!ring-success-1;
+    }
+
+    &:hover {
+        @apply dark:bg-success-1 bg-[color-mix(in_hsl,var(--c-success-2),var(--c-bg-1)_30%)];
+
+        &.button-outline,
+        &.button-dynamic {
+            @apply dark:!ring-success-1 !ring-success-2;
+        }
+    }
+}
+@utility button-warning {
+    @apply button-base dark:bg-warning-2 bg-[color-mix(in_hsl,var(--c-warning-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
+
+    &.button-outline {
+        @apply dark:!ring-warning-2 !ring-warning-1;
+    }
+
+    &.button-dynamic {
+        @apply hover:!ring-warning-1;
+    }
+
+    &:hover {
+        @apply dark:bg-warning-1 bg-[color-mix(in_hsl,var(--c-warning-2),var(--c-bg-1)_30%)];
+
+        &.button-outline,
+        &.button-dynamic {
+            @apply dark:!ring-warning-1 !ring-warning-2;
+        }
+    }
+}
+@utility button-danger {
+    @apply button-base dark:bg-danger-2 bg-[color-mix(in_hsl,var(--c-danger-1),var(--c-bg-1)_18%)] ring-stone-700/90 dark:ring-stone-600;
+
+    &.button-outline {
+        @apply dark:!ring-danger-2 !ring-danger-1;
+    }
+
+    &.button-dynamic {
+        @apply hover:!ring-danger-1;
+    }
+
+    &:hover {
+        @apply dark:bg-danger-1 bg-[color-mix(in_hsl,var(--c-danger-2),var(--c-bg-1)_20%)];
+
+        &.button-outline,
+        &.button-dynamic {
+            @apply dark:!ring-danger-1 !ring-danger-2;
+        }
+    }
+}
+
+
+/* .xyz{
+    
+} */

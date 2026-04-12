@@ -1,0 +1,58 @@
+/* BASIC - Fade */
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+    opacity: 1;
+}
+
+/* BASIC - Zoom */
+.zoom-enter-from,
+.zoom-leave-to {
+    scale: 0;
+}
+
+.zoom-enter-to,
+.zoom-leave-from {
+    scale: 1;
+}
+
+/* BASIC - Fade */
+.blur-enter-from,
+.blur-leave-to {
+    backdrop-filter: blur(10px);
+}
+
+.blur-enter-to,
+.blur-leave-from {
+    backdrop-filter: blur(0px);
+}
+
+/* BASIC - Zoom & Fade */
+.zoom-fade-enter-from,
+.zoom-fade-leave-to {
+    scale: 0;
+    opacity: 0;
+}
+
+.zoom-fade-enter-to,
+.zoom-fade-leave-from {
+    scale: 1;
+    opacity: 1;
+}
+
+
+/* Basic - Active/Timing */
+.fade-enter-active,
+.fade-leave-active,
+.zoom-enter-active,
+.zoom-leave-active,
+.blur-enter-active,
+.blur-leave-active,
+.zoom-fade-enter-active,
+.zoom-fade-leave-active {
+    transition: all ease 0.3s;
+}
