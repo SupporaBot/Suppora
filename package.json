@@ -20,8 +20,6 @@
     "db:gen-types": "npx supabase gen types typescript --project-id mwizyukmstkkohmtzqsa > packages/shared/src/types/supabase.ts"
   },
   "devDependencies": {
-    "@types/lru-cache": "^7.10.9",
-    "@types/luxon": "^3.7.1",
     "supabase": "^2.88.1"
   }
 }
