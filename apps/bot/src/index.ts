@@ -2,7 +2,7 @@ import 'dotenv/config'
 import fs from "fs";
 import path from "node:path";
 
-import { Client, Collection, Events, GatewayIntentBits } from "discord.js"
+import { Client, Collection } from "discord.js"
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -62,9 +62,9 @@ const eventFiles = await getAllFiles(path.join(__dirname, 'events'));
 for (const filePath of eventFiles) {
     const { default: event } = await import(pathToFileURL(filePath).href);
     if ('execute' in event) {
+        // - Only Process "clientReady" event in API_ONLY Env Mode:
+        if (process.env.ENVIRONMENT == 'api_only' && event?.name != 'clientReady') continue
         if (event?.once) {
-            // - Only Process "clientReady" event in API_ONLY Env Mode:
-            if (process.env.ENVIRONMENT == 'api_only' && event?.name != 'clientReady') continue
             client.once(event?.name, (...args) => event?.execute(...args));
         } else {
             client.on(event?.name, (...args) => event?.execute(...args));
@@ -85,4 +85,4 @@ if (debugFileLoader) {
 
 
 // + Discord Bot Login:
-client.login(BOT_TOKEN)
+await client.login(BOT_TOKEN)
