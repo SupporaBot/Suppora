@@ -1,22 +1,17 @@
 <script lang="ts" setup>
     import { useAuthStore } from '@/stores/auth';
 
+    // Props:
+    const props = defineProps<{
+        authOk: boolean | undefined
+    }>()
 
     // Services:
     const auth = useAuthStore()
 
     const gettingType = computed(() => {
-        if (!auth.authReady) return 'Account System'
+        if (!props.authOk) return 'Account System'
         if (!auth.signedIn) return 'New Sign In...'
-    })
-
-    // If Signing In:
-    onMounted(async () => {
-        const authOk = await auth.waitForAuthReady()
-        if (!auth.signedIn || !auth.user) {
-            // New Sign In:
-            auth.signIn()
-        }
     })
 
 </script>

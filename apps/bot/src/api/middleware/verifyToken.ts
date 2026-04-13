@@ -23,9 +23,15 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
         if (tokenError) {
             if (tokenError.code == 'bad_jwt') {
                 return new ApiResponse(res).failure(`[FORBIDDEN]: Invalid access token provided!`, HttpStatusCode.Forbidden)
+            } else if (
+                tokenError.code == 'session_not_found'
+                || tokenError.code == 'session_expired'
+                || tokenError.name == 'AuthSessionMissingError'
+            ) {
+                return new ApiResponse(res).failure(`[FORBIDDEN]: Auth session is invalid or has expired!`, HttpStatusCode.Forbidden)
             } else throw tokenError
         }
-        if (!user) throw new Error(`USER NOT FOUND from VerifyToken -- No Token Error & No User?`)
+        if (!user) throw new Error(`USER NOT FOUND -- VerifyToken -- No Token Error & No User?`)
 
         // Get User Profile:
         const { data: profile, error: profileError } = await supabase.from('profiles').select('*')
@@ -33,7 +39,7 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
             .single()
         // Profile Error:
         if (profileError || !profile) {
-            return new ApiResponse(res).failure(`[FORBIDDEN]: Couldn't verify user profile!`, HttpStatusCode.Forbidden)
+            return new ApiResponse(res).failure(`[FORBIDDEN]: Couldn't verify user profile from token!`, HttpStatusCode.Forbidden)
         }
 
         // Attach User/Profile to Request - Allow:

@@ -2,9 +2,11 @@ import { useAuthStore } from "@/stores/auth";
 import type { APIResponseValue } from "@suppora/shared";
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from "axios";
 
-export const API_BaseUrl = import.meta.env.PROD || true
-    ? import.meta.env.VITE_DIRECT_API_URL ?? 'https://api.suppora'
-    : 'http://localhost:3000/api/v1'
+const useDevelopmentApiHost = false
+
+export const API_BaseUrl = useDevelopmentApiHost
+    ? 'http://localhost:3000/api/v1'
+    : import.meta.env.VITE_DIRECT_API_URL ?? 'https://api.suppora'
 
 export const API_AxiosInstance = axios.create({
     baseURL: API_BaseUrl,
@@ -23,10 +25,11 @@ API_AxiosInstance.interceptors.request.use((config) => {
 })
 
 API_AxiosInstance.interceptors.response.use(
-    (res) => res,
+    undefined,
     (err) => {
         // On failure (NETWORK or Status >= 300)
-        console.error(`[API ERROR] - Suppora API Failure`, err)
+        const ctx = err?.response?.data || err?.response || err
+        console.error(`[API ERROR] - Suppora API Failure`, ctx)
         return Promise.reject(err)
     })
 
@@ -47,9 +50,10 @@ export async function ApiRequest<T>(req: AxiosRequestConfig) {
             success: true,
             status: response.status,
             data: response.data?.data,
-            error: undefined
+            error: undefined,
+            response: response
         }
-    } catch (err) {
+    } catch (err: any) {
         // API Error - Parse & Return:
         let status = 500
         if (err instanceof AxiosError) {
@@ -59,7 +63,8 @@ export async function ApiRequest<T>(req: AxiosRequestConfig) {
             success: false,
             status: status,
             data: undefined,
-            error: err as AxiosError | Error
+            error: err as AxiosError | Error,
+            response: err?.response as AxiosResponse<APIResponseValue<T>> | undefined
         }
     }
 

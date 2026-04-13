@@ -2,6 +2,7 @@ import { API_BaseUrl, ApiRequest } from "@/utils/api";
 import { supabase } from "@/utils/supabase";
 import type { Session, User } from "@supabase/supabase-js";
 import { type API_SelfUserIdentity } from "@suppora/shared"
+import { HttpStatusCode } from "axios";
 
 
 
@@ -20,11 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
             success: boolean,
             details: string
         }
-        if (authReady.value) return {
-            success: true,
-            details: 'ALREADY READY'
-        }
-        else return Promise.race([
+        return Promise.race([
             new Promise<AuthReadyResult>((r) => {
                 setTimeout(() => {
                     r({
@@ -34,9 +31,13 @@ export const useAuthStore = defineStore('auth', () => {
                 }, timeoutMs);
             }),
             new Promise<AuthReadyResult>((r) => {
+                if (authReady.value == true) r({
+                    success: true,
+                    details: 'ALREADY READY'
+                })
                 watch(authReady, (isReady) => {
                     if (isReady) {
-                        return r({
+                        r({
                             success: true,
                             details: 'SUCCESS - Auth Ready'
                         })
@@ -54,11 +55,19 @@ export const useAuthStore = defineStore('auth', () => {
     // Method - Sign Out via Supabase:
     async function signOut() {
         await supabase.auth.signOut()
+        location.assign('/')
     }
 
     // Method - Fetch Self Identity:
     async function fetchSelfIdentity() {
-        const { data, error } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: '/identity/users/@me' })
+        if (!session.value) return console.error(`(!) Cannot fetch identity w/o a valid session!`)
+        const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: '/identity/users/@me' })
+        // If Redirection - (Re-Authenticate)
+        if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
+            const location = response?.headers?.['Location']
+            console.warn(`[↗️ Self Identity]: Failed - Must Re-Authenticate - REDIRECTION!`, { redirect: location })
+            if (location) location.assign(location)
+        }
         if (error || !data) {
             console.warn('[❌ Self Identity]: API FAIL', { data, error })
         } else {
@@ -69,7 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Util - Reset Store
     function reset() {
-        authReady.value = false;
+        authReady.value = true;
         signedIn.value = false;
         user.value = null;
         session.value = null;
@@ -109,7 +118,7 @@ export const initializeAuthStateWatcher = () => {
 
     supabase.auth.onAuthStateChange(async (event, session) => {
         // Debug (if enabled):
-        if (debugAuthEvents) console.info(`[Auth 👤] EVENT - ${event}`, { user: session?.user })
+        if (debugAuthEvents) console.info(`[Auth 👤] EVENT - ${event}`, { user: session?.user });
 
         // Update Auth State(s):
         s.signedIn = session ? true : false;
@@ -119,17 +128,17 @@ export const initializeAuthStateWatcher = () => {
         // For Specific Event Type:
         if (event == 'INITIAL_SESSION') {
             // Mark auth store as ready - Fetch Self Identity:
-            s.authReady = true
-            await s.fetchSelfIdentity()
+            if (session) await s.fetchSelfIdentity();
+            s.authReady = true;
 
         } else if (event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') {
             // Refetch SELF Identity - Update Store:
-            await s.fetchSelfIdentity()
+            if (session) await s.fetchSelfIdentity();
 
         } else if (event == 'SIGNED_OUT' || !s || !s.user) {
             // User Signed Out - Clear/Reset Auth Store:
-            if (debugAuthEvents) console.log('NO Auth User detected, clearing store...')
-            s.reset()
+            if (debugAuthEvents) console.log('NO Auth User detected, clearing store...');
+            s.reset();
         }
 
     })
