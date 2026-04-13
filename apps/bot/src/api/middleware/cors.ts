@@ -21,7 +21,7 @@ function isAllowedOrigin(org: string): Boolean {
         const host = originUrl.hostname
 
         // Exact Allowed Matches:
-        if (allowedOrigins?.includes(originUrl.href)) return true
+        if (allowedOrigins?.includes(org)) return true
 
         // Allow CloudFlare Preview Pages:
         if (host.endsWith('.suppora.pages.dev')) return true
