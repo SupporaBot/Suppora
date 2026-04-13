@@ -15,15 +15,21 @@ const allowedOrigins = [
 ]
 
 // Util - Check for ALLOWED Origin/Host:
-function isAllowedOrigin(org: string) {
-    const originUrl = new URL(org)
-    const host = originUrl.hostname
+function isAllowedOrigin(org: string): Boolean {
+    try {
+        const originUrl = new URL(org)
+        const host = originUrl.hostname
 
-    // Exact Allowed Matches:
-    if (allowedOrigins?.includes(originUrl.href)) return true
+        // Exact Allowed Matches:
+        if (allowedOrigins?.includes(originUrl.href)) return true
 
-    // Allow CloudFlare Preview Pages:
-    if (host.endsWith('.suppora.pages.dev')) return true
+        // Allow CloudFlare Preview Pages:
+        if (host.endsWith('.suppora.pages.dev')) return true
+
+        return false
+    } catch (e) {
+        return false
+    }
 }
 
 const options: CorsOptions = {
