@@ -8,7 +8,7 @@
 
 
 <template>
-    <main class="flex-center w-full h-full flex-1 grow px-7 p-10">
+    <main class="flex-center w-full h-full flex-1 grow px-7 min-h-[87dvh] p-10">
         <div class="font-bold z-2 w-full flex-center gap-4 lg:gap-13 flex-col">
 
             <div>

@@ -8,7 +8,7 @@
 
 <template>
     <main class="flex grow flex-center max-w-7xl self-center p-4 gap-4">
-        top
+
         <span class="flex-center flex-col gap-4 w-full p-8">
             <span class="font-black text-5xl md:text-7xl">
                 Welcome to <p class="text-brand-1 inline">Suppora</p>
@@ -22,6 +22,13 @@
         </span>
 
         <div class="flex-center gap-2 p-2 flex-wrap">
+
+            <span class="p-4 w-30 h-45 rounded bg-bg-2">
+                <h2 class="w-full flex gap-1">
+                    <Icon icon="mdi:ticket" class="mb-auto size-7 bg-brand-2" />
+                    Built In Ticketing
+                </h2>
+            </span>
 
             <span class="p-4 w-30 h-45 rounded bg-bg-1">
                 Bg 1

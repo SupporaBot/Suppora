@@ -15,6 +15,7 @@ declare module 'vue' {
     AppHeader: typeof import('./../components/AppHeader.vue')['default']
     AppNavigation: typeof import('./../components/nav/AppNavigation.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
+    NavLinkButton: typeof import('./../components/nav/NavLinkButton.vue')['default']
     PixelSnow: typeof import('./../components/VueBits/PixelSnow.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
