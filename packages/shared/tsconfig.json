@@ -4,8 +4,7 @@
     "composite": true,
     "declaration": true,
     "rootDir": "src",
-    "outDir": "dist",
-    "types": ["discord.js"]
+    "outDir": "dist"
   },
   "include": ["src"]
 }
