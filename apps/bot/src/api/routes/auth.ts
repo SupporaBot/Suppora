@@ -15,7 +15,7 @@ const environment = process.env?.ENVIRONMENT || 'development'
 // oAuth URLS & Scopes
 const oAuth2Scopes: (keyof typeof OAuth2Scopes)[] = ['Identify', 'Guilds']
 const oAuth2ScopesURI = oAuth2Scopes?.map(s => s.toLowerCase())?.join('+')
-const oAuthRedirectURI = environment == 'production'
+const oAuthRedirectURI = environment == 'production' || true
     ? 'https://api.suppora.app/auth/discord-callback'
     : 'http://localhost:3000/api/auth/discord-callback';
 const oAuthUrl = environment == 'production'
