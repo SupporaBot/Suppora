@@ -20,13 +20,14 @@ export const COLORS = {
 } as const
 
 
-const fallbackSite = 'https://github.com/SupporaBot'
+
 export const URLS = {
     website: `https://suppora.app`,
-    docs: fallbackSite,
+    docs: `https://docs.suppora.app`,
     support: {
-        chat: fallbackSite,
+        chat: `https://discord.gg/jQjWxkbgbT`,
         site: `https://suppora.app/support`
     },
-    pricing: fallbackSite
+    community: `https://discord.gg/pEVXUpBzZs`,
+    pricing: `https://suppora.app/pricing`
 } as const

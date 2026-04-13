@@ -53,7 +53,7 @@ export const URLS = {
     status: "https://status.suppora.app",
     invite: "https://invite.suppora.app",
     discord: {
-        support: "https://discord.gg/INVITE_CODE",
-        general: "https://discord.gg/INVITE_CODE"
+        support: "https://discord.gg/jQjWxkbgbT",
+        general: "https://discord.gg/pEVXUpBzZs"
     }
 }
