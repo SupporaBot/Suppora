@@ -29,7 +29,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
 
         // Check For & Return Cached Identities:
         const cached = CACHE_SelfIdentities.get(discord_id)
-        if (cached && !forceApi) {
+        if (cached && forceApi != 'true') {
             return new ApiResponse(res).success(<API_SelfUserIdentity>{
                 ...cached,
                 _cache: true

@@ -10,6 +10,10 @@ import { UserIdentity } from "@supabase/supabase-js";
 const ENVIRONMENT = process.env.ENVIRONMENT
 const preventProductionTests = true;
 
+
+const applicationTestingGuildId = '1379160686629880028'
+const supporaOfficialGuildId = '1492365525093712012'
+
 export async function beginTests() {
     try {
         // Environment Check:
@@ -22,7 +26,7 @@ export async function beginTests() {
 
         // Test here:
 
-        // const testGuild = await CORE.bot.guilds.fetch('1379160686629880028')
+        // const testGuild = await CORE.bot.guilds.fetch(supporaOfficialGuildId)
 
         // const channel = await testGuild.channels?.fetch('1379160687154298912') as TextChannel
 
