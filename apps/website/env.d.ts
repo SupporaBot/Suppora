@@ -2,4 +2,5 @@
 interface ImportMetaEnv {
     VITE_SUPABASE_URL: string
     VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: string
+    VITE_DIRECT_API_URL: string
 }

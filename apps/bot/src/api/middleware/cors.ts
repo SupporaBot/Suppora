@@ -24,7 +24,7 @@ function isAllowedOrigin(org: string): Boolean {
         if (allowedOrigins?.includes(org)) return true
 
         // Allow CloudFlare Preview Pages:
-        if (host.endsWith('.suppora.pages.dev')) return true
+        if (host?.endsWith('.suppora.pages.dev')) return true
 
         return false
     } catch (e) {

@@ -25,6 +25,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
         const access_token = req?.auth?.profile?.discord_access_token
         const discord_id = req?.auth?.profile?.discord_id
         if (!discord_id) return new ApiResponse(res).failure(`[SELF IDENTITY] Couldn't get discord id from token!`, 400)
+        if (!access_token) return new ApiResponse(res).failure(`[UNAUTHORIZED] No Authorization token provided for identity!`, 401)
 
         // Check For & Return Cached Identities:
         const cached = CACHE_SelfIdentities.get(discord_id)
@@ -152,7 +153,7 @@ identityRoutes.get(`/guilds/:guildId`, async (req, res) => {
 
     } catch (err) {
         // Failed Guild Identity:
-        log.for('API').error(`[GUILD IDENTITY] Failed fetch a guild's identity!`)
+        log.for('API').error(`[GUILD IDENTITY] Failed fetch a guild's identity!`, { err })
         return new ApiResponse(res).failure(`[GUILD IDENTITY]: Failed due to an internal error!`)
     }
 })
@@ -179,8 +180,8 @@ identityRoutes.get(`/users/:userId`, async (req, res) => {
 
     } catch (err) {
         // Failed Guild Identity:
-        log.for('API').error(`[GUILD IDENTITY] Failed fetch a guild's identity!`)
-        return new ApiResponse(res).failure(`[GUILD IDENTITY]: Failed due to an internal error!`)
+        log.for('API').error(`[USER IDENTITY] Failed fetch a user's identity!`, { err })
+        return new ApiResponse(res).failure(`[USER IDENTITY]: Failed due to an internal error!`)
     }
 })
 

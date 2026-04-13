@@ -7,6 +7,9 @@ declare namespace NodeJS {
         DISCORD_CLIENT_ID: string
         DISCORD_CLIENT_SECRET: string
 
+        BETTERSTACK_INGESTING_HOST: string
+        BETTERSTACK_SOURCE_TOKEN: string
+
         SUPABASE_URL: string
         SUPABASE_KEY: string
 

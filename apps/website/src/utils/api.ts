@@ -3,7 +3,7 @@ import type { APIResponseValue } from "@suppora/shared";
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from "axios";
 
 export const API_BaseUrl = import.meta.env.PROD || true
-    ? 'https://drunk-mollie-suppora-app-2baeaa82.koyeb.app/api/v1' // 'https://api.suppora/v1' // update me to direct api link
+    ? import.meta.env.VITE_DIRECT_API_URL ?? 'https://api.suppora'
     : 'http://localhost:3000/api/v1'
 
 export const API_AxiosInstance = axios.create({

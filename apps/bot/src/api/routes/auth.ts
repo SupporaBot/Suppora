@@ -203,6 +203,7 @@ authRoutes.get('/discord-callback', async (req, res) => {
 
 
 // ALL - DISCORD AUTH REFRESH
+// FINISH ME
 // URL: https://api.suppora.app/v1/auth./discord-refresh
 authRoutes.get(`/discord-refresh`, async (req, res) => {
     try {

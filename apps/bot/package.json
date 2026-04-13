@@ -11,8 +11,10 @@
     "deploy-cmds": "tsx src/scripts/deploy-cmds.ts"
   },
   "dependencies": {
+    "@logtail/node": "^0.5.8",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
+    "axios": "^1.15.0",
     "chrono-node": "^2.9.0",
     "cors": "^2.8.6",
     "discord.js": "^14.26.2",
@@ -20,14 +22,13 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
     "lru-cache": "^11.3.3",
-    "axios": "^1.15.0",
     "luxon": "^3.7.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/luxon": "^3.7.1",
     "@types/express": "^5.0.6",
     "@types/lru-cache": "^7.10.9",
+    "@types/luxon": "^3.7.1",
     "tsx": "^4.21.0"
   }
 }

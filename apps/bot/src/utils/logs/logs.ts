@@ -1,4 +1,14 @@
+import { Logtail } from '@logtail/node'
 import LogCategories from './categories'
+import PkgFile from '../../../package.json'
+
+const ENVIRONMENT = process.env.ENVIRONMENT ?? 'development'
+const SOURCE_TOKEN = process.env.BETTERSTACK_SOURCE_TOKEN
+const INGESTING_HOST = process.env.BETTERSTACK_INGESTING_HOST
+
+const logtail = new Logtail(SOURCE_TOKEN, {
+    endpoint: INGESTING_HOST,
+})
 
 type CategoryName = keyof typeof LogCategories
 
@@ -19,27 +29,49 @@ function getStack() {
     return stack
 }
 
+// Logtail Middleware - Fixes Context:
+logtail.use(async (log) => {
+    const stack = getStack()?.splice(7)?.map(s => s?.trim())
+    const caller = stack[2] || stack[3]
+
+    const enriched = {
+        ...log,
+        context: {
+            ...log.context,
+            stack,
+            caller,
+            environment: ENVIRONMENT,
+            // commit_sha: ENVIRONMENT_GIT_COMMIT_SHA?.slice(0, 7),
+            version: `@suppora/bot-v${PkgFile.version}`,
+            service: "discord-bot",
+            runtime: undefined,
+            system: undefined
+        }
+    }
+
+    if (ENVIRONMENT != 'production') {
+        console.log(enriched)
+    }
+
+    return enriched
+});
+
 const useLog = () => {
     return {
         for: (category: CategoryName) => {
-            const c = LogCategories[category]
-            const stack = getStack()
-            const caller = stack[3] || stack[4]
-
             // Log Content(s):
-            const logPrefix = `[${c.emoji} ${c.name}]`
-            const logContent = (message: string, ctx?: LogMeta) => {
-                if (ctx) return [`${logPrefix} ${message}`, ctx]
-                else return [`${logPrefix} ${message}`]
-            }
+            const c = LogCategories[category]
+            const logMessage = (msg: string) => `[${c.emoji} ${c.name}] ${msg}`
 
+            // Return Log Methods:
             return {
-                info: (message: string, ctx?: LogMeta) => console.info(...logContent(message, ctx)),
-                debug: (message: string, ctx?: LogMeta) => console.debug(...logContent(message, ctx)),
-                warn: (message: string, ctx?: LogMeta) => console.warn(...logContent(message, ctx)),
-                error: (message: string, ctx?: LogMeta) => console.error(...logContent(message, ctx))
+                info: (message: string, ctx?: LogMeta) => logtail.info(logMessage(message), ctx),
+                debug: (message: string, ctx?: LogMeta) => console.debug(logMessage(message), ctx),
+                warn: (message: string, ctx?: LogMeta) => console.warn(logMessage(message), ctx),
+                error: (message: string, ctx?: LogMeta) => console.error(logMessage(message), ctx),
             }
-        }
+        },
+        sync: () => logtail.flush()
     }
 }
 
