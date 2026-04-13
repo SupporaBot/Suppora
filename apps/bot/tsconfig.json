@@ -1,11 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "module": "preserve",
     "composite": true,
     "rootDir": "src",
     "outDir": "dist",
     "types": ["node"],
     "skipLibCheck": false,
+    "isolatedModules": true
   },
   "include": ["src"],
   "references": [

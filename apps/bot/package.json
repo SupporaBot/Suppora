@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "start": "tsx src/index.ts",
+    "type-check": "tsc -b -noEmit",
     "deploy-cmds": "tsx src/scripts/deploy-cmds.ts"
   },
   "dependencies": {
