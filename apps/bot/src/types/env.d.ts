@@ -9,6 +9,7 @@ declare namespace NodeJS {
 
         BETTERSTACK_INGESTING_HOST: string
         BETTERSTACK_SOURCE_TOKEN: string
+        BETTERSTACK_UPTIME_API_KEY: string
 
         SUPABASE_URL: string
         SUPABASE_KEY: string

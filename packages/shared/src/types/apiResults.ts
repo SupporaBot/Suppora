@@ -2,13 +2,13 @@ import { HttpStatusCode } from 'axios'
 import type { Response } from 'express'
 
 /** Base {@linkcode ApiResponse} Return Value */
-export type APIResponseValue<d = unknown, e = unknown> = {
+export type APIResponseValue<d = unknown, e = unknown> = ({
     success: true,
     data: d,
 } | {
     success: false,
     error: e
-} & {
+}) & {
     status: {
         code: number,
         message: string
@@ -20,7 +20,7 @@ export type APIResponseValue<d = unknown, e = unknown> = {
 export class ApiResponse {
 
     // Get Responder from Class:
-    private res: Response
+    private res: Response<APIResponseValue>
     constructor(res: Response) {
         this.res = res
     }
@@ -29,7 +29,7 @@ export class ApiResponse {
      * @default-status-code `200`
      * @returns- {@linkcode APIResponseValue} */
     public success<ResData>(data: ResData, statusCode: HttpStatusCode | number = 200) {
-        return this.res.status(statusCode).json(<APIResponseValue>{
+        return this.res.status(statusCode).json({
             success: true,
             data,
             status: {
