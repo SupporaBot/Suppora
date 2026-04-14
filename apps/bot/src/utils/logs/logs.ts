@@ -66,9 +66,9 @@ const useLog = () => {
             // Return Log Methods:
             return {
                 info: (message: string, ctx?: LogMeta) => logtail.info(logMessage(message), ctx),
-                debug: (message: string, ctx?: LogMeta) => console.debug(logMessage(message), ctx),
-                warn: (message: string, ctx?: LogMeta) => console.warn(logMessage(message), ctx),
-                error: (message: string, ctx?: LogMeta) => console.error(logMessage(message), ctx),
+                debug: (message: string, ctx?: LogMeta) => logtail.debug(logMessage(message), ctx),
+                warn: (message: string, ctx?: LogMeta) => logtail.warn(logMessage(message), ctx),
+                error: (message: string, ctx?: LogMeta) => logtail.error(logMessage(message), ctx),
             }
         },
         sync: () => logtail.flush()

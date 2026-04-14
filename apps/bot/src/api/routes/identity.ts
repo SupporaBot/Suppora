@@ -1,6 +1,6 @@
 import Express from 'express'
 import verifyToken from '../middleware/verifyToken'
-import axios from 'axios'
+import axios, { HttpStatusCode } from 'axios'
 import { LRUCache } from 'lru-cache'
 import { ApiResponse, requiredBotPermissions, API_GuildIdentity, API_SelfUserIdentity, API_UserIdentity } from '@suppora/shared'
 import { PermissionFlagsBits, PermissionsBitField, RESTGetAPICurrentUserGuildsResult, RESTGetAPICurrentUserResult } from 'discord.js'
@@ -16,20 +16,31 @@ const CACHE_SelfIdentities = new LRUCache<string, API_SelfUserIdentity>({
     ttl: (60_000 * 7) // 7 mins
 })
 
+const PENDING_SelfIdentities = new Map<string, Promise<API_SelfUserIdentity>>()
+
+async function dedupeIdentity(discord_id: string, fn: () => Promise<API_SelfUserIdentity>) {
+    if (PENDING_SelfIdentities.has(discord_id)) return PENDING_SelfIdentities.get(discord_id)!
+    const promise = fn().finally(() => PENDING_SelfIdentities.delete(discord_id))
+    PENDING_SelfIdentities.set(discord_id, promise)
+    return promise
+}
+
 // SELF - Identity - Authed User
 // URL: https://api.suppora.app/v1/identity/users/@me
 identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
     try {
         // Parse Request:
-        const forceApi = req.query?.force
+        const forceApi = (req.query?.force == 'true')
         const access_token = req?.auth?.profile?.discord_access_token
+        const token_exp_at = DateTime.fromISO(req.auth.profile.discord_tokens_expires_at, { zone: 'utc' })
         const discord_id = req?.auth?.profile?.discord_id
-        if (!discord_id) return new ApiResponse(res).failure(`[SELF IDENTITY] Couldn't get discord id from token!`, 400)
-        if (!access_token) return new ApiResponse(res).failure(`[UNAUTHORIZED] No Authorization token provided for identity!`, 401)
+        if (!token_exp_at?.isValid || token_exp_at <= DateTime.utc()) return new ApiResponse(res).failure(`[SELF IDENTITY] Forbidden - Discord Token is EXPIRED - Please try signing out and back in!`, HttpStatusCode.Forbidden)
+        if (!access_token) return new ApiResponse(res).failure(`[SELF IDENTITY] Unauthorized - No token provided for identity!`, 401)
+        if (!discord_id) return new ApiResponse(res).failure(`[SELF IDENTITY] Bad Request - Couldn't get discord id from token!`, 400)
 
         // Check For & Return Cached Identities:
         const cached = CACHE_SelfIdentities.get(discord_id)
-        if (cached && forceApi != 'true') {
+        if (cached && !forceApi) {
             return new ApiResponse(res).success(<API_SelfUserIdentity>{
                 ...cached,
                 _cache: true
@@ -45,42 +56,45 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
             }
         })
 
-        // Get Self Discord User Data:
-        const { status: userStatus, data: userRes }: { status: number, data: RESTGetAPICurrentUserResult } = await discordAPI.get('/users/@me')
-        if (!userRes || userStatus >= 300) {
+
+        // Discord API - Get Self User Data:
+        const userRes = await discordAPI.get<RESTGetAPICurrentUserResult>('/users/@me')
+        if (!userRes || userRes.status >= 300) {
             // User Data Fetch - Failed:
-            log.for('API').error(`[SELF IDENTITY] Failed to fetch self Discord user data!`, { err: userRes, status: userStatus })
-            return new ApiResponse(res).failure(`[SELF IDENTITY] Failed to fetch self Discord user data!`)
+            log.for('API').error(`[SELF IDENTITY] Failed to fetch self Discord user data!`, { err: userRes?.data, status: userRes?.status })
+            return new ApiResponse(res).failure(`[SELF IDENTITY] Failed to fetch self Discord user data!`, userRes?.status ?? 500)
         }
+
+        const userData = userRes?.data
         const userDataMap = {
-            id: userRes.id,
-            username: userRes?.username,
-            display_name: userRes?.global_name,
-            accent_color: userRes?.accent_color,
+            id: userData.id,
+            username: userData?.username,
+            display_name: userData?.global_name,
+            accent_color: userData?.accent_color,
             avatar_url: (() => {
-                if (!userRes.avatar) return `https://cdn.discordapp.com/embed/avatars/1.png`
-                const fileExt = userRes?.avatar?.startsWith('a_') ? '.gif' : '.png';
-                return `https://cdn.discordapp.com/avatars/${userRes?.id}/${userRes?.avatar}${fileExt}`
+                if (!userData.avatar) return `https://cdn.discordapp.com/embed/avatars/1.png`
+                const fileExt = userData?.avatar?.startsWith('a_') ? '.gif' : '.png';
+                return `https://cdn.discordapp.com/avatars/${userData?.id}/${userData?.avatar}${fileExt}`
             })()
         }
 
-        // Get Discord User's Guilds:
-        const { status: guildsStatus, data: guildsRes }: { status: number, data: RESTGetAPICurrentUserGuildsResult } = await discordAPI.get(`/users/@me/guilds`)
-        if (!guildsRes || guildsStatus >= 300) {
+        // Discord API - Get Self Guilds Data:
+        const guildsRes = await discordAPI.get<RESTGetAPICurrentUserGuildsResult>(`/users/@me/guilds`)
+        if (!guildsRes?.data || guildsRes.status >= 300) {
             // Guilds Data Fetch - Failed:
-            log.for('API').error(`[SELF IDENTITY] Failed to fetch self Discord guild data!`, { err: guildsRes, status: guildsStatus })
-            return new ApiResponse(res).failure(`[SELF IDENTITY] Failed to fetch self Discord guild data!`)
+            log.for('API').error(`[SELF IDENTITY] Failed to fetch self Discord guild data!`, { err: guildsRes?.data, status: guildsRes?.status })
+            return new ApiResponse(res).failure(`[SELF IDENTITY] Failed to fetch self Discord guild data!`, guildsRes?.status ?? 500)
         }
 
         // Map Guild Data:
         const userGuildsMap = await (async () => {
             // Get any user guilds from DB:
             const { data: guildsInDbRes, error: guildsInDbError } = await supabase.from('guilds').select('id')
-                .in('id', guildsRes?.map(g => g.id))
+                .in('id', guildsRes?.data?.map(g => g.id))
             if (guildsInDbError) throw new Error(`Failed to fetch guilds in db for self identity`, { cause: guildsInDbError })
             const guildsInDb = guildsInDbRes?.flatMap(g => g.id) ?? []
             // Map all user guilds:
-            return guildsRes.map(g => ({
+            return guildsRes?.data.map(g => ({
                 id: g?.id,
                 name: g?.name,
                 icon: (() => {
