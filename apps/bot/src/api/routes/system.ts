@@ -42,3 +42,5 @@ systemRoutes.get(`/status`, async (req, res) => {
 
     }
 })
+
+export default systemRoutes

@@ -4,6 +4,7 @@ import rateLimiter from './middleware/rateLimiter'
 import { ApiResponse } from '@suppora/shared'
 import authRoutes from './routes/auth'
 import identityRoutes from './routes/identity'
+import systemRoutes from './routes/system'
 
 // Express App:
 const app = Express()
@@ -26,6 +27,7 @@ app.use(rateLimiter)
 // API Routes:
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/identity', identityRoutes)
+app.use('/api/v1/system', systemRoutes)
 
 
 // NOT FOUND - 404 Handler:
