@@ -1,11 +1,9 @@
 import { DateTime } from 'luxon'
-import { checkGuildPermissions } from "./permissions";
 import { log } from "./logs/logs";
 import { CORE } from "./core";
-import { BotErrorMessageContainer, DefaultBotFooter } from "../types/customBuilders";
-import { MessageFlags, TextChannel } from "discord.js";
 import { supabase } from "./database/supabase";
-import { UserIdentity } from "@supabase/supabase-js";
+import sendWithFallback from './messages/sendWithFallback';
+import guildCreate from '../events/guildCreate';
 
 const ENVIRONMENT = process.env.ENVIRONMENT
 const preventProductionTests = true;
@@ -26,9 +24,7 @@ export async function beginTests() {
 
         // Test here:
 
-        // const testGuild = await CORE.bot.guilds.fetch(supporaOfficialGuildId)
-
-        // const channel = await testGuild.channels?.fetch('1379160687154298912') as TextChannel
+        // const testGuild = await CORE.bot.guilds.fetch(applicationTestingGuildId)
 
         // console.log(r)
 

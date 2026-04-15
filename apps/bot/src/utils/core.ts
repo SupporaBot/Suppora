@@ -23,6 +23,7 @@ export const COLORS = {
 
 export class URLS {
     static website = `https://suppora.app`
+    static dashboard = this.website + `/dashboard`
     static docs = `https://docs.suppora.app`
 
     static support = {
@@ -49,5 +50,3 @@ export class IMAGE_URLS {
         'https://cdn.discordapp.com/embed/avatars/5.png'
     ]
 }
-
-URLS.docs = 'test-replaced.com'

@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      guild_stats: {
+        Row: {
+          ai_questions_answered: number
+          guild_id: string
+          tickets_created: number
+          tickets_resolved: number
+        }
+        Insert: {
+          ai_questions_answered?: number
+          guild_id: string
+          tickets_created?: number
+          tickets_resolved?: number
+        }
+        Update: {
+          ai_questions_answered?: number
+          guild_id?: string
+          tickets_created?: number
+          tickets_resolved?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guild_stats_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: true
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guilds: {
         Row: {
           id: string
@@ -34,6 +63,56 @@ export type Database = {
           owner_id?: string
         }
         Relationships: []
+      }
+      panels: {
+        Row: {
+          created_at: string
+          description: string | null
+          extra_actions: Json | null
+          form_data: Json | null
+          guild_id: string
+          id: string
+          max_open_user_tickets: number | null
+          restrict_creator_roles: string[] | null
+          restrict_staff_teams: boolean
+          staff_team_ids: string[] | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          extra_actions?: Json | null
+          form_data?: Json | null
+          guild_id: string
+          id?: string
+          max_open_user_tickets?: number | null
+          restrict_creator_roles?: string[] | null
+          restrict_staff_teams?: boolean
+          staff_team_ids?: string[] | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          extra_actions?: Json | null
+          form_data?: Json | null
+          guild_id?: string
+          id?: string
+          max_open_user_tickets?: number | null
+          restrict_creator_roles?: string[] | null
+          restrict_staff_teams?: boolean
+          staff_team_ids?: string[] | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "panels_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -68,6 +147,95 @@ export type Database = {
         }
         Relationships: []
       }
+      teams: {
+        Row: {
+          created_at: string
+          guild_id: string
+          id: string
+          role_id_off_call: string | null
+          role_id_on_call: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          guild_id: string
+          id?: string
+          role_id_off_call?: string | null
+          role_id_on_call?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          guild_id?: string
+          id?: string
+          role_id_off_call?: string | null
+          role_id_on_call?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Teams_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          channel_id: string
+          created_at: string
+          creator_id: string
+          guild_id: string
+          id: string
+          panel_data: Json | null
+          panel_id: string | null
+          staff_ids: string[] | null
+          status: Database["public"]["Enums"]["Ticket Status"]
+          thread_id: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          creator_id: string
+          guild_id: string
+          id?: string
+          panel_data?: Json | null
+          panel_id?: string | null
+          staff_ids?: string[] | null
+          status: Database["public"]["Enums"]["Ticket Status"]
+          thread_id: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          creator_id?: string
+          guild_id?: string
+          id?: string
+          panel_data?: Json | null
+          panel_id?: string | null
+          staff_ids?: string[] | null
+          status?: Database["public"]["Enums"]["Ticket Status"]
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_guild_id_fkey"
+            columns: ["guild_id"]
+            isOneToOne: false
+            referencedRelation: "guilds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_panel_id_fkey"
+            columns: ["panel_id"]
+            isOneToOne: false
+            referencedRelation: "panels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -76,7 +244,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      "Ticket Status": "open" | "ongoing" | "resolved"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -203,6 +371,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      "Ticket Status": ["open", "ongoing", "resolved"],
+    },
   },
 } as const

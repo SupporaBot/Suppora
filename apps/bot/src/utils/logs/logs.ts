@@ -18,6 +18,8 @@ type LogMeta = {
     guildId?: string,
     /** The **`Discord`** user id to attach to the log. */
     userId?: string,
+    /** `Boolean` representing weather this log is critical or not. */
+    critical?: boolean,
 } & {
     [x: string]: any
 }
