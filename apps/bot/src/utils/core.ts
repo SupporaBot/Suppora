@@ -21,13 +21,33 @@ export const COLORS = {
 
 
 
-export const URLS = {
-    website: `https://suppora.app`,
-    docs: `https://docs.suppora.app`,
-    support: {
+export class URLS {
+    static website = `https://suppora.app`
+    static docs = `https://docs.suppora.app`
+
+    static support = {
         chat: `https://discord.gg/jQjWxkbgbT`,
         site: `https://suppora.app/support`
-    },
-    community: `https://discord.gg/pEVXUpBzZs`,
-    pricing: `https://suppora.app/pricing`
-} as const
+    }
+
+    static community = `https://discord.gg/pEVXUpBzZs`
+    static pricing = `https://suppora.app/pricing`
+}
+export class IMAGE_URLS {
+
+    static logo = {
+        dark: (URLS.website + '/logo.png'),
+        light: (URLS.website + '/logo-light.png')
+    }
+
+    static discord_logo: [
+        'https://cdn.discordapp.com/embed/avatars/0.png',
+        'https://cdn.discordapp.com/embed/avatars/1.png',
+        'https://cdn.discordapp.com/embed/avatars/2.png',
+        'https://cdn.discordapp.com/embed/avatars/3.png',
+        'https://cdn.discordapp.com/embed/avatars/4.png',
+        'https://cdn.discordapp.com/embed/avatars/5.png'
+    ]
+}
+
+URLS.docs = 'test-replaced.com'

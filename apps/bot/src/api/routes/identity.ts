@@ -7,7 +7,7 @@ import { PermissionFlagsBits, PermissionsBitField, REST, RESTGetAPICurrentUserGu
 import { supabase } from '../../utils/database/supabase'
 import { log } from '../../utils/logs/logs'
 import { DateTime } from 'luxon'
-import { CORE } from '../../utils/core'
+import { CORE, IMAGE_URLS, URLS } from '../../utils/core'
 
 const identityRoutes = Express.Router({ mergeParams: true })
 
@@ -88,7 +88,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
                 display_name: userData?.global_name,
                 accent_color: userData?.accent_color,
                 avatar_url: (() => {
-                    if (!userData.avatar) return `https://cdn.discordapp.com/embed/avatars/1.png`
+                    if (!userData.avatar) return IMAGE_URLS.discord_logo[1]
                     const fileExt = userData?.avatar?.startsWith('a_') ? '.gif' : '.png';
                     return `https://cdn.discordapp.com/avatars/${userData?.id}/${userData?.avatar}${fileExt}`
                 })()
@@ -114,7 +114,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
                     id: g?.id,
                     name: g?.name,
                     icon: (() => {
-                        if (!g.icon) return `https://cdn.discordapp.com/embed/avatars/1.png`
+                        if (!g.icon) return IMAGE_URLS.discord_logo[1]
                         const fileExt = g?.icon?.startsWith('a_') ? '.gif' : '.png';
                         return `https://cdn.discordapp.com/icons/${g?.id}/${g?.icon}${fileExt}`
                     })(),
@@ -208,7 +208,7 @@ identityRoutes.get(`/guilds/:guildId`, async (req, res) => {
             name: g?.name,
             id: g?.id,
             owner_id: g?.ownerId,
-            icon_url: g.iconURL({ size: 512 }) ?? `https://cdn.discordapp.com/embed/avatars/1.png`,
+            icon_url: g.iconURL({ size: 512 }) ?? IMAGE_URLS.discord_logo[1],
             missing_permissions: missingPermissions
         }
         return new ApiResponse(res).success(identity)
@@ -236,7 +236,7 @@ identityRoutes.get(`/users/:userId`, async (req, res) => {
         const identity: API_UserIdentity = {
             username: u.username,
             display_name: u.displayName,
-            avatar_url: u.avatarURL() ?? `https://cdn.discordapp.com/embed/avatars/1.png`
+            avatar_url: u.avatarURL() ?? IMAGE_URLS.discord_logo[1]
         }
         return new ApiResponse(res).success(identity)
 
