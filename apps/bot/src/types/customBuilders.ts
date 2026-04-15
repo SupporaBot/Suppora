@@ -18,7 +18,7 @@ export class DefaultBotFooter {
 
     constructor(showWatermark: boolean, showHelpResources: boolean) {
         let rString = ``
-        if (showWatermark) rString += `-# Powered by [**Suppora Bot**](${URLS.website})`
+        if (showWatermark) rString += `-# Powered by [**Suppora**](${URLS.website})`
         if (showHelpResources) rString += ((showWatermark ? '\n' : '') + `-# Need Help? - Contact [Bot Support](${URLS.support.chat})`)
         return new TextBuilder(rString)
     }

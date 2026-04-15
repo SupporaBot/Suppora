@@ -1,16 +1,17 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, ContainerBuilder, lazy, SectionBuilder, SeparatorBuilder } from "discord.js"
-import { HexColorNumber, TextBuilder } from "../../types/customBuilders"
-import { CORE, IMAGE_URLS, URLS } from "../core"
+import { DefaultBotFooter, HexColorNumber, TextBuilder } from "../../types/customBuilders"
+import { COLORS, CORE, IMAGE_URLS, URLS } from "../core"
 
-export const botWelcomeMessage = () => {
+export const botWelcomeMessage = () => { // Improve me
     return new ContainerBuilder({
-        accent_color: Colors.Red, // HexColorNumber(COLORS.orange),
+        accent_color: HexColorNumber(COLORS.orange),
         components: <any>[
-            new TextBuilder(`##👋🏽  Welcome to <@${CORE.bot.user.id}>!`),
+            new TextBuilder(`## 👋🏽  Welcome to <@${CORE.bot.user.id}>!`),
             new SeparatorBuilder(),
             new SectionBuilder({
                 components: <any>[
-                    new TextBuilder(`**It's easy to start using your new Suppora application, visit your [Bot Dashboard](${URLS.dashboard}) to get started!**`)
+                    new TextBuilder(`It's easy to start using your *new Suppora application*, **visit your [Bot Dashboard](${URLS.dashboard}) to get started!**`),
+                    new TextBuilder(`>>> Take advantage of exciting features: \n- Setup your integrated ticket system — This can be used for support requests, applications, or anything you need! \n- Improve your ticketing flow with a "Ticket Panel", an interactive ticket creation message along with an optional designated creation form/questions. \n- Designate specific staff teams (roles) for certain users to be pinged oon ticket creations.`)
                 ],
                 accessory: {
                     type: ComponentType.Thumbnail,
@@ -20,6 +21,7 @@ export const botWelcomeMessage = () => {
                     }
                 }
             }),
+            new DefaultBotFooter(true, false),
             new SeparatorBuilder(),
             new ActionRowBuilder({
                 components: [
@@ -34,7 +36,7 @@ export const botWelcomeMessage = () => {
                         label: '💬 Support Chat'
                     })
                 ]
-            })
+            }),
         ]
     })
 }
