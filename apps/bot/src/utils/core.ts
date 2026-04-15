@@ -36,9 +36,11 @@ export class URLS {
 }
 export class IMAGE_URLS {
 
+    static w = 'https://suppora.pages.dev' as undefined
+
     static logo = {
-        dark: (URLS.website + '/logo.png'),
-        light: (URLS.website + '/logo-light.png')
+        dark: (this?.w + '/logo.png'),
+        light: (this.w + '/logo-light.png')
     }
 
     static discord_logo: [
@@ -50,3 +52,4 @@ export class IMAGE_URLS {
         'https://cdn.discordapp.com/embed/avatars/5.png'
     ]
 }
+IMAGE_URLS.w = undefined
