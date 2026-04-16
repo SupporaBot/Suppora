@@ -1,8 +1,9 @@
 import Express from 'express'
 import cors from './middleware/cors'
+import cookieParser from 'cookie-parser'
 import rateLimiter from './middleware/rateLimiter'
 import { ApiResponse } from '@suppora/shared'
-import authRoutes from './routes/auth'
+import authRoutes from './routes/auth/auth'
 import identityRoutes from './routes/identity'
 import systemRoutes from './routes/system'
 
@@ -11,8 +12,9 @@ const app = Express()
 const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env?.ENVIRONMENT || 'development'
 
-// Config - Auto Parse JSON:
+// Config - Auto Parse JSON & Cookies:
 app.use(Express.json())
+app.use(cookieParser())
 
 // Config - Trust Proxy:
 app.set('trust-proxy', true)

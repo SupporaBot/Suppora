@@ -8,6 +8,7 @@ import { supabase } from '../../utils/database/supabase'
 import { log } from '../../utils/logs/logs'
 import { DateTime } from 'luxon'
 import { CORE, IMAGE_URLS, URLS } from '../../utils/core'
+import ensureValidDiscordToken from '../middleware/ensureValidDiscordToken'
 
 const identityRoutes = Express.Router({ mergeParams: true })
 
@@ -16,31 +17,28 @@ const CACHE_SelfIdentities = new LRUCache<string, API_SelfUserIdentity>({
     ttl: (60_000 * 7) // 7 mins
 })
 const PENDING_SelfIdentities = new Map<string, Promise<Express.Response>>()
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms))
 
 export const discordOAuthAPI = axios.create({
     baseURL: 'https://discord.com/api',
     timeout: 15_000,
 })
-
-const sleep = (ms: number) => new Promise(res => setTimeout(res, ms))
-
 discordOAuthAPI.interceptors.response.use(
     res => res,
     async (error) => {
         const res = error.response
 
         if (res?.status === 429) {
+            // 429 - Too Many Requests:
             const retryAfter = res.data?.retry_after ?? 1
-
+            // Track Retry Count:
             error.config.__retryCount = error.config.__retryCount || 0
-
             if (error.config.__retryCount >= 2) {
                 return Promise.reject(error)
             }
-
             error.config.__retryCount++
 
-            console.warn(`[DISCORD] 429 hit, retrying in ${retryAfter}s`)
+            log.for('API').warn(`[DISCORD API - Identity] 429 hit, retrying in ${retryAfter}s`)
 
             await sleep(retryAfter * 1000)
 
@@ -54,14 +52,12 @@ discordOAuthAPI.interceptors.response.use(
 
 // SELF - Identity - Authed User
 // URL: https://api.suppora.app/v1/identity/users/@me
-identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
+identityRoutes.get(`/users/@me`, verifyToken, ensureValidDiscordToken, async (req, res) => {
     try {
         // Parse Request:
         const forceApi = (req.query?.force == 'true')
         const access_token = req?.auth?.profile?.discord_access_token
-        const token_exp_at = DateTime.fromISO(req.auth.profile.discord_tokens_expires_at, { zone: 'utc' })
         const discord_id = req?.auth?.profile?.discord_id
-        if (!token_exp_at?.isValid || token_exp_at <= DateTime.utc()) return new ApiResponse(res).failure(`[SELF IDENTITY] Forbidden - Discord Token is EXPIRED - Please try signing out and back in!`, HttpStatusCode.Forbidden)
         if (!access_token) return new ApiResponse(res).failure(`[SELF IDENTITY] Unauthorized - No token provided for identity!`, 401)
         if (!discord_id) return new ApiResponse(res).failure(`[SELF IDENTITY] Bad Request - Couldn't get discord id from token!`, 400)
 
@@ -73,7 +69,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
                 _cache: true
             })
         }
-        async function getIdentity(discordId: string) {
+        async function getIdentity() {
 
             // Discord API - Get Self User Data:
             const { data: userData } = await discordOAuthAPI.get<RESTGetAPICurrentUserResult>('/users/@me',
@@ -163,7 +159,7 @@ identityRoutes.get(`/users/@me`, verifyToken, async (req, res) => {
         if (PENDING_SelfIdentities.get(discord_id)) return PENDING_SelfIdentities.get(discord_id)
         else {
             // Fetch Fresh Identity:
-            const promise = getIdentity(discord_id)
+            const promise = getIdentity()
             PENDING_SelfIdentities.set(discord_id, promise)
             try {
                 return await promise
@@ -219,7 +215,6 @@ identityRoutes.get(`/guilds/:guildId`, async (req, res) => {
         return new ApiResponse(res).failure(`[GUILD IDENTITY]: Failed due to an internal error!`)
     }
 })
-
 
 
 // User - Identity - Public:

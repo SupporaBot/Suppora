@@ -36,7 +36,7 @@ export class URLS {
 }
 export class IMAGE_URLS {
 
-    static w = 'https://suppora.pages.dev' as undefined
+    static w = 'https://suppora.pages.dev' as undefined // PROD: Change me!
 
     static logo = {
         dark: (this?.w + '/logo.png'),

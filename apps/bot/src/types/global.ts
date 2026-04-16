@@ -48,7 +48,6 @@ declare module "discord.js" {
 
 }
 
-
 declare module "Express"
 declare module "express-serve-static-core" {
 
