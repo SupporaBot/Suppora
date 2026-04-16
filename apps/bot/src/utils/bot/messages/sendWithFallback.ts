@@ -8,10 +8,10 @@ type SendWithFallbackReturn = (
             message: Message
             destination: 'preferred' | 'system' | 'public_updates' | 'any_guild_text' | 'guild_owner_dm'
         }
-        error?: never
+        error: undefined
     } | {
         success: false
-        data?: never
+        data: undefined
         error: any
     }
 )
@@ -58,7 +58,8 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                         data: {
                             destination: 'preferred',
                             message: sentMessage
-                        }
+                        },
+                        error: undefined
                     } as const
                 }
             }
@@ -76,7 +77,8 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                         data: {
                             destination: 'system',
                             message: sentMessage
-                        }
+                        },
+                        error: undefined
                     } as const
                 }
             }
@@ -94,7 +96,8 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                         data: {
                             destination: 'public_updates',
                             message: sentMessage
-                        }
+                        },
+                        error: undefined
                     } as const
                 }
             }
@@ -119,7 +122,8 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                     data: {
                         destination: 'any_guild_text',
                         message: sentMessage
-                    }
+                    },
+                    error: undefined
                 } as const
             }
         } catch (e) { }
@@ -135,7 +139,8 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                     data: {
                         destination: 'guild_owner_dm',
                         message: sentMessage
-                    }
+                    },
+                    error: undefined
                 } as const
             }
         } else throw new Error('All send attempts failed - This guild may no longer be reachable?')
@@ -144,6 +149,7 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
         // All Send A Failure - Return:
         return {
             success: false,
+            data: undefined,
             error: err
         } as const
     }

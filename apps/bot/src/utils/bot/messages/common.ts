@@ -2,7 +2,8 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, ContainerB
 import { DefaultBotFooter, TextBuilder } from "../../../types/customBuilders"
 import { COLORS, CORE, IMAGE_URLS, URLS } from "../../core"
 
-export const botWelcomeMessage = () => { // Improve me
+// ! PROD: Improve Me!
+export const botWelcomeMessage = () => {
     return new ContainerBuilder({
         accent_color: COLORS.Orange,
         components: <any>[
