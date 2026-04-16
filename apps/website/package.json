@@ -11,27 +11,27 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@suppora/shared": "*",
     "@primeuix/themes": "^2.0.3",
     "@supabase/supabase-js": "^2.102.1",
+    "@suppora/shared": "*",
     "@tailwindcss/vite": "^4.2.2",
     "@vueuse/core": "^14.2.1",
+    "axios": "^1.15.0",
+    "luxon": "^3.7.2",
     "pinia": "^3.0.4",
     "primevue": "^4.5.5",
     "tailwindcss": "^4.2.2",
     "three": "^0.183.2",
     "vue": "^3.5.31",
-    "vue-router": "^5.0.4",
-    "axios": "^1.15.0",
-    "luxon": "^3.7.2"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@iconify/vue": "^5.0.0",
     "@primevue/auto-import-resolver": "^4.5.5",
     "@tsconfig/node24": "^24.0.4",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^24.12.0",
     "@types/three": "^0.183.1",
-    "@types/luxon": "^3.7.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/tsconfig": "^0.9.1",
     "npm-run-all2": "^8.0.4",
@@ -40,7 +40,8 @@
     "unplugin-vue-components": "^32.0.0",
     "vite": "^8.0.3",
     "vite-plugin-vue-devtools": "^8.1.1",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.2.6",
+    "wrangler": "^4.83.0"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
