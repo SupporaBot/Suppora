@@ -11,7 +11,7 @@ export type APIResponseValue<d = unknown, e = unknown> = ({
 }) & {
     status: {
         code: number,
-        message: string
+        message: string | HttpStatusCode[keyof HttpStatusCode]
     }
 }
 
@@ -34,7 +34,7 @@ export class ApiResponse {
             data,
             status: {
                 code: statusCode,
-                message: HttpStatusCode[statusCode]
+                message: HttpStatusCode[statusCode] ?? 'OK'
             }
         })
     }
@@ -48,7 +48,7 @@ export class ApiResponse {
             error,
             status: {
                 code: statusCode,
-                message: HttpStatusCode[statusCode]
+                message: HttpStatusCode[statusCode] ?? 'InternalServerError'
             }
         })
     }
