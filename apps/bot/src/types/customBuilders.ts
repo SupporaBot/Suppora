@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, SeparatorBuilder, TextDisplayBuilder } from "discord.js";
-import { COLORS, URLS } from "../utils/core";
+import { COLORS, CORE, URLS } from "../utils/core";
 
 // -------- DEFAULT (LIKE) BUILDERS --------
 
@@ -16,10 +16,18 @@ export const HexColorNumber = (color: string) => Number(String(color).replace('#
 // -------- CUSTOM BUILDERS --------
 export class DefaultBotFooter {
 
-    constructor(showWatermark: boolean, showHelpResources: boolean) {
-        let rString = ``
-        if (showWatermark) rString += `-# Powered by [**Suppora**](${URLS.website})`
-        if (showHelpResources) rString += ((showWatermark ? '\n' : '') + `-# Need Help? - Contact [Bot Support](${URLS.support.chat})`)
+    constructor(opts?: {
+        /** Show small link for help resources? @default false */
+        showHelpResources?: boolean,
+        /** Additional text to append after (with divider " | ") the Bot Footer text. @default undefined */
+        leading?: string
+        /** Additional text to append after (with divider " | ") the Bot Footer text. @default undefined */
+        trailing?: string
+    }) {
+        let rString = `-# ${CORE.emojis?.Logo?.syntax} Powered by [**Suppora**](${URLS.website})`
+        if (opts?.showHelpResources) rString += ` — [Need Help?](${URLS.support.chat})`
+        if (opts?.leading?.length) rString = `${opts.leading} | ${rString?.replace('-#', '')?.trim()}`
+        if (opts?.trailing?.length) rString = `${rString} | ${opts.trailing}`
         return new TextBuilder(rString)
     }
 }
@@ -35,8 +43,8 @@ export class BotErrorMessageContainer {
         details: string = `It appears we ran into an error somewhere along the way processing that last interaction... If this issue persists please get in contact with [Bot Support](${URLS.support.chat}).`) {
 
         const accent_color = level == 'WARN'
-            ? HexColorNumber(COLORS.warning)
-            : HexColorNumber(COLORS.error)
+            ? COLORS.Orange
+            : COLORS.Aqua
 
         return new ContainerBuilder({
             accent_color,

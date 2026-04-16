@@ -3,8 +3,8 @@ import { log } from "../utils/logs/logs";
 import { DiscordLogs } from "../utils/logs/discord";
 import { supabase } from "../utils/database/supabase";
 import { DateTime } from "luxon";
-import sendWithFallback from "../utils/messages/sendWithFallback";
-import { botWelcomeMessage } from "../utils/messages/common";
+import sendWithFallback from "../utils/bot/messages/sendWithFallback";
+import { botWelcomeMessage } from "../utils/bot/messages/common";
 
 export default <EventData>{
     name: 'guildCreate',

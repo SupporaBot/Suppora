@@ -1,6 +1,6 @@
 import { ContainerBuilder, EventData, Interaction, MessageFlags, SeparatorBuilder, TextDisplayBuilder } from "discord.js";
 import { COLORS, CORE } from "../utils/core";
-import { BotErrorMessageContainer, HexColorNumber, TextBuilder } from "../types/customBuilders";
+import { BotErrorMessageContainer } from "../types/customBuilders";
 import { log } from "../utils/logs/logs";
 import { isDiscordPermissionError } from "../utils/permissions";
 
@@ -38,7 +38,7 @@ const useCooldowns = () => {
             },
 
             cooldownAlertContent: (remainingSecs: number) => new ContainerBuilder({
-                accent_color: HexColorNumber(COLORS.warning),
+                accent_color: COLORS.Orange,
                 components: <any>[
                     new TextDisplayBuilder({ content: `## ⏳ Cooldown` }),
                     new SeparatorBuilder(),
@@ -82,6 +82,14 @@ export default <EventData>{
             if (i.isButton()) {
                 const buttonId = i?.customId?.split(':')[0]
                 const button = CORE.bot.buttons.get(buttonId)
+
+                // Confirm not already replied or inside bypass list:
+                const bypassIds = [
+                    "ticket-modal-cancel",
+                    "ticket-modal-continue"
+                ]
+                if (bypassIds?.includes(buttonId)) return
+                if (i?.replied || i?.deferred) return
 
                 // Confirm Button
                 if (!button) {
@@ -176,7 +184,7 @@ export default <EventData>{
             if (isDiscordPermissionError(err)) {
                 log.for('Bot').warn(`The ${interactionUniqueString} interaction has failed due to permissions!`, { guildId: guildId, interaction: interactionUniqueID, err })
             } else {
-                log.for('Bot').error(`The ${interactionUniqueString} interaction has failed!`, { guildId: guildId, userId: userId, err })
+                log.for('Bot').error(`The ${interactionUniqueString} interaction has failed!`, { guildId: guildId, userId: userId, interaction: interactionUniqueID, err })
             }
 
             // Build Error Alert Message:

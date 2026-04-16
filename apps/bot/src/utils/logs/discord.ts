@@ -17,7 +17,7 @@ export const DiscordLogs = {
             // Build Message
             const guildIconUrl = (g?.iconURL({ size: 256 }) || IMAGE_URLS.discord_logo[1])
             const content = new ContainerBuilder({
-                accent_color: HexColorNumber(COLORS.success),
+                accent_color: COLORS.Success,
                 components: <any>[
                     new TextBuilder(`## ✅ Bot Installed`),
                     new SeparatorBuilder(),
@@ -52,7 +52,7 @@ export const DiscordLogs = {
             // Build Message
             const guildIconUrl = (g?.iconURL({ size: 256 }) || IMAGE_URLS.discord_logo[1])
             const content = new ContainerBuilder({
-                accent_color: HexColorNumber(COLORS.error),
+                accent_color: COLORS.Error,
                 components: <any>[
                     new TextBuilder(`## ❌  Bot Uninstalled`),
                     new SeparatorBuilder(),

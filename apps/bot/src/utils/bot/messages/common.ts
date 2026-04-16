@@ -1,10 +1,10 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, ContainerBuilder, lazy, SectionBuilder, SeparatorBuilder } from "discord.js"
-import { DefaultBotFooter, HexColorNumber, TextBuilder } from "../../types/customBuilders"
-import { COLORS, CORE, IMAGE_URLS, URLS } from "../core"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, ContainerBuilder, SectionBuilder, SeparatorBuilder } from "discord.js"
+import { DefaultBotFooter, TextBuilder } from "../../../types/customBuilders"
+import { COLORS, CORE, IMAGE_URLS, URLS } from "../../core"
 
 export const botWelcomeMessage = () => { // Improve me
     return new ContainerBuilder({
-        accent_color: HexColorNumber(COLORS.orange),
+        accent_color: COLORS.Orange,
         components: <any>[
             new TextBuilder(`## 👋🏽  Welcome to <@${CORE.bot.user.id}>!`),
             new SeparatorBuilder(),
@@ -21,7 +21,7 @@ export const botWelcomeMessage = () => { // Improve me
                     }
                 }
             }),
-            new DefaultBotFooter(true, false),
+            new DefaultBotFooter(),
             new SeparatorBuilder(),
             new ActionRowBuilder({
                 components: [

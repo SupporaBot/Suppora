@@ -1,10 +1,17 @@
 import { User } from "@supabase/supabase-js";
 import { Database } from "@suppora/shared";
 import { Collection, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { HexColorNumber } from "./customBuilders";
 
 
 // - Extended Discord.js Types:
 declare module "discord.js" {
+
+    // Client / Interaction Data
+    interface Client {
+        commands: Collection<string, CommandData>
+        buttons: Collection<string, ButtonData>
+    }
 
     interface CommandData {
         /** Command definition data */
@@ -41,10 +48,7 @@ declare module "discord.js" {
         execute: (...args: any) => any;
     }
 
-    interface Client {
-        commands: Collection<string, CommandData>
-        buttons: Collection<string, ButtonData>
-    }
+
 
 }
 

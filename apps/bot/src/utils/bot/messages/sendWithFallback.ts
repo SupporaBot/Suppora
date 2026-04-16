@@ -1,15 +1,17 @@
-import { AnyComponentV2, APIMessageTopLevelComponent, ComponentBuilder, ContainerBuilder, Guild, Message, MessageFlags, TextBasedChannel } from "discord.js"
+import { AnyComponentV2, ComponentBuilder, Guild, Message, MessageFlags, TextBasedChannel } from "discord.js"
 
 
 type SendWithFallbackReturn = (
     {
-        success: true,
-        message: Message,
-        destination: 'preferred' | 'system' | 'public_updates' | 'any_guild_text' | 'guild_owner_dm'
-    }
-    |
-    {
-        success: false,
+        success: true
+        data: {
+            message: Message
+            destination: 'preferred' | 'system' | 'public_updates' | 'any_guild_text' | 'guild_owner_dm'
+        }
+        error?: never
+    } | {
+        success: false
+        data?: never
         error: any
     }
 )
@@ -53,8 +55,10 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                 if (sentMessage) {
                     return {
                         success: true,
-                        destination: 'preferred',
-                        message: sentMessage
+                        data: {
+                            destination: 'preferred',
+                            message: sentMessage
+                        }
                     } as const
                 }
             }
@@ -69,8 +73,10 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                 if (sentMessage) {
                     return {
                         success: true,
-                        destination: 'system',
-                        message: sentMessage
+                        data: {
+                            destination: 'system',
+                            message: sentMessage
+                        }
                     } as const
                 }
             }
@@ -85,8 +91,10 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
                 if (sentMessage) {
                     return {
                         success: true,
-                        destination: 'public_updates',
-                        message: sentMessage
+                        data: {
+                            destination: 'public_updates',
+                            message: sentMessage
+                        }
                     } as const
                 }
             }
@@ -108,8 +116,10 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
             if (sentMessage) {
                 return {
                     success: true,
-                    destination: 'any_guild_text',
-                    message: sentMessage
+                    data: {
+                        destination: 'any_guild_text',
+                        message: sentMessage
+                    }
                 } as const
             }
         } catch (e) { }
@@ -122,8 +132,10 @@ async function sendWithFallback(guild: Guild, content: ComponentBuilder<AnyCompo
             if (sentMessage) {
                 return {
                     success: true,
-                    destination: 'guild_owner_dm',
-                    message: sentMessage
+                    data: {
+                        destination: 'guild_owner_dm',
+                        message: sentMessage
+                    }
                 } as const
             }
         } else throw new Error('All send attempts failed - This guild may no longer be reachable?')

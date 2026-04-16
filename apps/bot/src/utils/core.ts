@@ -1,22 +1,32 @@
 import { Client } from "discord.js";
+import { Colors as DJSColors } from "discord.js";
+import { BotEmojiData, BotEmojiName } from "./bot/emojis";
 
 export const CORE = {
     /** Currently available Discord Bot {@linkcode Client} (if any). */
-    bot: <Client<true> | undefined>undefined
+    bot: <Client<true> | undefined>undefined,
+
+    /** Application Emojis Fetched from Client
+     * @required `clientReady` event for data propagation  */
+    emojis: <Record<BotEmojiName, BotEmojiData>>undefined
 }
 
 
 export const COLORS = {
-    red: '#c43a3a',
-    error: '#c43a3a',
-    orange: '#c4663a',
-    warning: '#c4663a',
-    yellow: '#c4b63a',
-    green: '#3ac44c',
-    success: '#3ac44c',
-    blue: '#3674e6',
-    info: '#3674e6',
-    purple: '#8236e6'
+    ...DJSColors,
+    Error: 0xC43A3A,
+    Success: 0x3ac44c,
+    Warning: 0xe67e22
+    // red: '#c43a3a',
+    // error: '#c43a3a',
+    // orange: '#c4663a',
+    // warning: '#c4663a',
+    // yellow: '#c4b63a',
+    // green: '#3ac44c',
+    // success: '#3ac44c',
+    // blue: '#3674e6',
+    // info: '#3674e6',
+    // purple: '#8236e6'
 } as const
 
 
@@ -25,6 +35,8 @@ export class URLS {
     static website = `https://suppora.app`
     static dashboard = this.website + `/dashboard`
     static docs = `https://docs.suppora.app`
+
+    static invite = `https://invite.suppora.app`
 
     static support = {
         chat: `https://discord.gg/jQjWxkbgbT`,
