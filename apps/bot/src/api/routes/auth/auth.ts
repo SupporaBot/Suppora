@@ -16,7 +16,8 @@ const environment = process.env?.ENVIRONMENT || 'development'
 // oAuth URLS & Scopes
 const oAuth2ScopesURI: string = <(keyof typeof OAuth2Scopes)>['Identify', 'Guilds']?.map(s => s.toLowerCase())?.join('+')
 // ! FORCE: PUBLISHED API:
-const oAuthRedirectURI = environment == 'production' || true
+const forceProdAuthApi = true
+const oAuthRedirectURI = environment == 'production' || forceProdAuthApi
     ? 'https://api.suppora.app/auth/discord-callback'
     : 'http://localhost:3000/api/v1/auth/discord-callback';
 const oAuthUrl = environment == 'production'
@@ -94,7 +95,7 @@ authRoutes.get('/discord-callback', async (req, res) => {
             // Confirm Magic Link:
             if (linkError || !link) throw new Error(`Discord Auth Callback Error - MAGIC LINK FAILED`, { cause: linkError })
             else {
-                return res.redirect(URLS.website + `#access-token=${link.properties.hashed_token}`)
+                return res.redirect(link.properties.action_link)
             }
         }
 
@@ -102,7 +103,7 @@ authRoutes.get('/discord-callback', async (req, res) => {
     } catch (err) {
         // FAILED - Discord Auth Callback - Log & Redirect:
         log.for('Auth').error(`FAILED - Discord AUTH Callback`, { err })
-        return res.redirect(URLS.website + `/sign-in?failed=true&reason=internal+error`)
+        return res.redirect(URLS.website + `/ sign -in? failed = true & reason=internal + error`)
     }
 
 })
