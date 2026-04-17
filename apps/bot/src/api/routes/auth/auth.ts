@@ -36,9 +36,9 @@ authRoutes.all(`/sign-in`, (req, res) => {
     const state = crypto.randomUUID()
     res.cookie('oauth_state', state, {
         maxAge: 60_000 * 7,
-        secure: process.env?.ENVIRONMENT == 'production',
+        secure: process.env.ENVIRONMENT != 'development' ? true : false,
         httpOnly: true,
-        sameSite: 'lax'
+        sameSite: process.env.ENVIRONMENT != 'development' ? 'none' : 'lax'
     })
     // Redirect User to Discord oAuth:
     return res.redirect(oAuthUrl + `&state=${state}`)
@@ -60,7 +60,7 @@ authRoutes.get('/discord-callback', async (req, res) => {
             log.for('Auth').error(`FAILED - Discord AUTH Callback - Missing/Invalid State`, { states: { from_discord: state, from_cookie: stateCookie } })
             return res.redirect(URLS.website + `/sign-in?failed=true&reason=oAuth+state`)
         }
-        res.clearCookie('oauth-state');
+        res.clearCookie('oauth_state');
 
         // Exchange Code for Access Token(s):
         const { data, status } = await axios.post<DiscordAPIError | DiscordOAuth2TokenResponse>('https://discord.com/api/oauth2/token',
