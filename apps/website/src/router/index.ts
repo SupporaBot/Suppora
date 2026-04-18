@@ -3,6 +3,7 @@ import Homepage from './homepage/Homepage.vue'
 import NotFound from './notFound.vue'
 import Test from './test.vue'
 import Account from './account/Account.vue'
+import Dashboard from './dashboard/Dashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,7 +14,12 @@ const router = createRouter({
       component: Homepage
     },
 
-
+    {
+      name: 'Dashboard',
+      path: '/dashboard',
+      alias: ['/bot-dashboard'],
+      component: Dashboard
+    },
 
     {
       name: 'Account',
@@ -41,6 +47,28 @@ const router = createRouter({
       component: NotFound
     }
   ],
+  scrollBehavior: (to, from, savedPos) => {
+    // Back/forward navigation
+    if (savedPos) {
+      return {
+        ...savedPos,
+        behavior: 'smooth'
+      }
+    }
+    // Anchor links (#section)
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth'
+      }
+    }
+    // Default scroll to top
+    return {
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    }
+  }
 })
 
 

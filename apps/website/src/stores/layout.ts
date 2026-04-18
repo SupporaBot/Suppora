@@ -28,11 +28,26 @@ export const useLayoutStore = defineStore('nav', () => {
         attribute: 'data-theme'
     }))
 
-    // Reactive Header Height:
-    const appHeader = {
-        currentHeight: ref(0),
-        updateHeight: (h: number) => appHeader.currentHeight.value = h
+    // Site Header - State:
+    const useAppHeader = () => {
+        const currentHeight = ref(0)
+        const rounded = ref(true)
+        return {
+            currentHeight,
+            rounded
+        }
     }
+    const appHeader = useAppHeader()
+
+    // Site Footer - State:
+    const useAppFooter = () => {
+        const rounded = ref(true)
+        return {
+            rounded
+        }
+    }
+    const appFooter = useAppFooter()
+
 
     // + Return States & Methods:
     return {
@@ -41,7 +56,9 @@ export const useLayoutStore = defineStore('nav', () => {
         /** Main controller and value for current selected site theme. */
         colorMode,
         /** Reactive App Header Values */
-        appHeader
+        appHeader,
+        /** Reactive App Footer Values */
+        appFooter
     }
 })
 

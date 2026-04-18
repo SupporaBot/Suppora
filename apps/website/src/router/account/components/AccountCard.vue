@@ -9,6 +9,9 @@
     const user = computed(() => auth.user)
     const identity = computed(() => auth.identity)
 
+    const identityLastFetchedAt = computed(() => DateTime.fromISO(String(identity?.value?._fetched_at), { zone: 'local' }))
+    const identityResyncWaitMins = 5
+    const cooldownSecsUntilIdentityRefresh = computed(() => Math.max(identityLastFetchedAt.value.plus({ minute: identityResyncWaitMins })?.diffNow('seconds')?.seconds, 0))
 
 </script>
 
@@ -43,6 +46,7 @@
 
             <!-- Account Details -->
             <div class="flex w-full md:w-fit max-w-full flex-col gap-2">
+                <!-- UID -->
                 <span class="w-full flex flex-col items-center gap-1">
                     <span class="flex w-full gap-1 flex-row items-center text-text-2">
                         <Icon icon="teenyicons:id-solid" class="size-4.5" />
@@ -52,7 +56,7 @@
                         - {{ user?.id || 'Unknown' }}
                     </p>
                 </span>
-
+                <!-- Discord Id -->
                 <span class="w-full flex flex-col items-center gap-1">
                     <span class="flex w-full gap-1 flex-row items-center text-text-2">
                         <Icon icon="ic:baseline-discord" class="size-4.5" />
@@ -62,7 +66,7 @@
                         - {{ identity?.id ?? 'Unknown' }}
                     </p>
                 </span>
-
+                <!-- Created At -->
                 <span class="w-full flex flex-col items-center gap-1">
                     <span class="flex w-full gap-1 flex-row items-center text-text-2">
                         <Icon icon="tabler:clock-filled" class="size-4.5" />
@@ -70,7 +74,20 @@
                     </span>
                     <p class="text-xs w-full pl-1.5 opacity-65">
                         - {{ user?.created_at
-                            ? DateTime.fromISO(user?.created_at)?.toFormat(`D '-' t`)
+                            ? DateTime.fromISO(user?.created_at, { zone: 'local' })?.toFormat(`D '-' t`)
+                            : `Unknown`
+                        }}
+                    </p>
+                </span>
+                <!-- Last Sync -->
+                <span class="w-full flex flex-col items-center gap-1">
+                    <span class="flex w-full gap-1 flex-row items-center text-text-2">
+                        <Icon icon="fluent:cloud-sync-16-filled" class="size-4.5" />
+                        <p class="font-semibold"> Last Sync </p>
+                    </span>
+                    <p class="text-xs w-full pl-1.5 opacity-65">
+                        - {{ user?.created_at
+                            ? identityLastFetchedAt?.toFormat(`D '-' t`)
                             : `Unknown`
                         }}
                     </p>
@@ -81,11 +98,18 @@
 
 
         <!-- Actions -->
-        <div class="flex-center flex-col w-full p-3 gap-3 mb-2.25">
+        <div class="flex-center flex-col w-full p-3 gap-4.5 mb-2.25">
             <button @click="auth.signOut()" title="Sign Out"
-                class="ring-danger-2 gap-0.75 hover:!ring-danger-3 button-outline bg-bg-3! active:scale-95">
+                class="ring-danger-3 gap-0.75 hover:!ring-danger-2 button-outline bg-bg-3! active:scale-95">
                 <Icon icon="line-md:logout" class="size-5.5 py-px" />
                 Sign Out
+            </button>
+
+            <button @click="auth.fetchSelfIdentity(true)" :disabled="cooldownSecsUntilIdentityRefresh >= 1"
+                title="Resync Discord Data"
+                class=" gap-0.75 hover:!ring-brand-2 disabled:cursor-not-allowed disabled:!ring-ring-2 disabled:scale-100! button-outline bg-bg-3! active:scale-95">
+                <Icon icon="ic:baseline-discord" class="size-5.5 py-px" />
+                Resync Discord Data
             </button>
 
             <RouterLink to="/privacy" class="text-text-3 hover:text-info-2 mt-1 hover:underline text-xs">

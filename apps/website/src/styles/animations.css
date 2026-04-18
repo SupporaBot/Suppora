@@ -1,3 +1,5 @@
+@import './tailwind.css';
+
 /* BASIC - Fade */
 .fade-enter-from,
 .fade-leave-to {
@@ -55,4 +57,23 @@
 .zoom-fade-enter-active,
 .zoom-fade-leave-active {
     transition: all ease 0.3s;
+}
+
+
+/* Blur Fade */
+.blur-fade-enter-from,
+.blur-fade-leave-to {
+    @apply blur-xs;
+    opacity: 0;
+}
+
+.blur-fade-enter-to,
+.blur-fade-leave-from {
+    @apply blur-none;
+    opacity: 1;
+}
+
+.blur-fade-enter-active,
+.blur-fade-leave-active {
+    transition: all ease 0.23s;
 }

@@ -1,6 +1,12 @@
 // Self Identity:
 export type API_SelfUserIdentity_Guild = {
-
+    id: string;
+    name: string;
+    icon: string;
+    owner: boolean;
+    permissions: string;
+    can_manage: boolean;
+    bot_installed: boolean;
 }
 
 export type API_SelfUserIdentity = {
@@ -9,15 +15,7 @@ export type API_SelfUserIdentity = {
     display_name: string;
     accent_color?: number;
     avatar_url: string;
-    guilds: {
-        id: string;
-        name: string;
-        icon: string;
-        owner: boolean;
-        permissions: string;
-        can_manage: boolean;
-        bot_installed: boolean;
-    }[]
+    guilds: API_SelfUserIdentity_Guild[]
     _fetched_at: string,
     _cache?: boolean
 }

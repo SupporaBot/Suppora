@@ -3,15 +3,18 @@
     import { Icon } from '@iconify/vue'
     const fallbackUrl = 'https://github.com/SupporaBot'
 
-    const nav = useLayoutStore()
-    const colorMode = nav.colorMode()
+    const layout = useLayoutStore()
+    const colorMode = layout.colorMode()
 
 </script>
 
 
 <template>
     <footer
-        class="w-full z-4 flex flex-wrap items-center max-sm:flex-col md:flex-row gap-3 p-4 bg-bg-2 rounded-t-2xl ring-ring-3/50 ring-2">
+        class="w-full z-4 flex flex-wrap items-center max-sm:flex-col md:flex-row gap-3 p-4 bg-bg-2 ring-ring-3/50 ring-2"
+        :class="{
+            'rounded-tl-2xl': layout.appFooter.rounded,
+        }">
 
         <span class="flex-center gap-3 grow md:gap-5 max-sm:flex-col">
             <!-- Logo & Title -->

@@ -59,9 +59,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // Method - Fetch Self Identity:
-    async function fetchSelfIdentity() {
+    async function fetchSelfIdentity(forceApi?: boolean) {
         if (!session.value) return console.error(`(!) Cannot fetch identity w/o a valid session!`)
-        const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: '/identity/users/@me' })
+        const apiPath = forceApi ? '/identity/users/@me?force=true' : '/identity/users/@me';
+        const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: apiPath })
         // If Redirection - (Re-Authenticate)
         if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
             const location = response?.headers?.['Location']

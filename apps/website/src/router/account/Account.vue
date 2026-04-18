@@ -33,12 +33,8 @@
         <Transition name="zoom" enter-active-class="absolute m-auto transition-all transition-[0.3s]"
             leave-active-class="absolute m-auto transition-all">
             <LoadingCard v-if="!authOk" :authOk />
-
-            <AccountCard v-else-if="auth.signedIn" />
-
             <SignInFailedCard v-else-if="authErrorQuery != undefined" />
-
-
+            <AccountCard v-else-if="auth.signedIn" />
         </Transition>
 
     </main>

@@ -16,10 +16,37 @@
   <AppNavigation />
   <span class="block w-full" :style="{ height: headerHeight }" />
 
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="blur-fade" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
+
 
   <AppFooter />
 
 </template>
 
-<style scoped></style>
+<style scoped>
+
+  @reference "@/styles/main.css";
+
+  .router-leave-to,
+  .router-enter-from {
+    @apply blur-xs;
+    opacity: 0;
+  }
+
+  .router-enter-to,
+  .router-leave-from {
+    @apply blur-none;
+    opacity: 1;
+  }
+
+  .router-enter-active,
+  .router-leave-active {
+    transition: all ease 0.23s;
+  }
+
+
+</style>

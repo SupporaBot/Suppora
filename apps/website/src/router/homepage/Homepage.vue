@@ -8,7 +8,6 @@
 
 <template>
     <main class="flex grow flex-center max-w-7xl self-center p-4 gap-4">
-
         <span class="flex-center flex-col gap-4 w-full p-8">
             <span class="font-black text-5xl md:text-7xl">
                 Welcome to <p class="text-brand-1 inline">Suppora</p>

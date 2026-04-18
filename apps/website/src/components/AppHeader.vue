@@ -9,7 +9,7 @@
     const headerEl = useTemplateRef('headerRef')
     const size = useElementSize(headerEl, undefined, { box: 'border-box' })
     watch(() => size.height.value, (h) => {
-        if (h) layout.appHeader?.updateHeight(h)
+        if (h) layout.appHeader.currentHeight = h // .updateHeight(h)
     }, { immediate: true })
 
 
@@ -19,7 +19,9 @@
 
 <template>
     <header ref="headerRef"
-        class="flex fixed z-4 top-0 w-full h-fit justify-between items-center p-4 bg-bg-2 rounded-b-2xl ring-ring-3/50 ring-2">
+        class="flex fixed z-4 top-0 w-full h-fit justify-between items-center p-4 bg-bg-2 ring-ring-3/50 ring-2" :class="{
+            'rounded-b-2xl': layout.appHeader.rounded,
+        }">
         <!-- Logo & Title -->
         <RouterLink to="/" title="Suppora" class="flex-center flex-nowrap! gap-1.25">
             <img src="/logo-light.png" class="dark:block hidden size-7 rounded" />
