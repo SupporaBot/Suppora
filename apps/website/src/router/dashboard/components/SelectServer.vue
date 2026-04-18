@@ -31,7 +31,7 @@
 
 <template>
     <main class="flex-center m-auto">
-        <div class="flex-center flex-col m-8 bg-bg-2 p-4 pb-1.5 gap-2 max-w-120 mx-8 rounded-md border-2 border-ring-2">
+        <div class="flex-center flex-col m-8 bg-bg-2 p-4 pb-1.5 gap-2 max-w-155 mx-8 rounded-md border-2 border-ring-2">
 
             <span class="w-full flex max-sm:justify-center items-center flex-row gap-1">
                 <Icon icon="fa7-solid:clipboard-list" class="size-7" />
@@ -56,7 +56,8 @@
                     </button>
                 </div>
 
-                <ul class="gap-2.5 flex-center items-stretch px-4 p-2 my-2 w-full h-fit">
+                <!-- Guild's List -->
+                <ul class="gap-3.5 flex-center items-stretch px-4 p-2 my-2 w-full h-fit">
                     <button v-for="g in inputFilteredGuilds" :title="g?.name" @click="selectServer(g)"
                         class="bg-bg-3 grow p-3 px-4 gap-2! flex-col! button-base rounded-md">
                         <img :src="g?.icon ?? '/discord.png'" class="size-17 rounded-md border border-ring-3" />

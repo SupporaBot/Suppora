@@ -11,7 +11,7 @@
 
 <template>
     <footer
-        class="w-full z-4 flex flex-wrap items-center max-sm:flex-col md:flex-row gap-3 p-4 bg-bg-2 ring-ring-3/50 ring-2"
+        class="w-full z-4 flex flex-wrap items-center max-sm:flex-col md:flex-row gap-3 p-4 bg-bg-2 ring-ring-soft ring-2"
         :class="{
             'rounded-tl-2xl': layout.appFooter.rounded,
         }">

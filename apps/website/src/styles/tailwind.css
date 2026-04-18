@@ -20,6 +20,7 @@
     --color-ring-1: var(--c-ring-1);
     --color-ring-2: var(--c-ring-2);
     --color-ring-3: var(--c-ring-3);
+    --color-ring-soft: var(--c-ring-soft);
 
     /* Brand Color Shades */
     --color-brand-1: var(--c-brand-1);
@@ -58,10 +59,6 @@
 
 
 /* Button Utilities */
-
-
-
-
 @utility button-base {
     @apply flex-center bg-bg-2 px-1.75 py-0.75 rounded-md ring-2 ring-ring-2 font-medium text-sm cursor-pointer transition-all;
 

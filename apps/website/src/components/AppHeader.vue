@@ -19,7 +19,7 @@
 
 <template>
     <header ref="headerRef"
-        class="flex fixed z-4 top-0 w-full h-fit justify-between items-center p-4 bg-bg-2 ring-ring-3/50 ring-2" :class="{
+        class="flex fixed z-4 top-0 w-full h-fit justify-between items-center p-4 bg-bg-2 ring-ring-soft ring-2" :class="{
             'rounded-b-2xl': layout.appHeader.rounded,
         }">
         <!-- Logo & Title -->

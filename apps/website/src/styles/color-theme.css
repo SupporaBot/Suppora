@@ -16,6 +16,7 @@
     --c-ring-1: color-mix(in hsl, var(--c-text-1) 100%, var(--c-bg-1) 50% );
     --c-ring-2: color-mix(in hsl, var(--c-text-2) 100%, var(--c-bg-1) 50% );
     --c-ring-3: color-mix(in hsl, var(--c-text-3) 100%, var(--c-bg-1) 50% );
+    --c-ring-soft: color-mix(in oklab, var(--c-ring-2), var(--c-bg-1) 50%);
 
     /* Regular Colors */
     /* --c-brand-1: #d47b27;

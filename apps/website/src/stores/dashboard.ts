@@ -8,9 +8,18 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
     }
 
+
+    // Dashboard Nav:
+    const nav = (() => ({
+        expanded: ref(false),
+        toggle: () => nav.expanded.value = !nav.expanded.value
+    }))()
+
     // Return States & Methods:
     return {
         guildId,
-        guildData
+        guildData,
+
+        nav
     }
 })
