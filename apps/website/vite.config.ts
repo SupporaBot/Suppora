@@ -6,6 +6,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 import tailwindcss from '@tailwindcss/vite'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite';
 
@@ -14,6 +16,7 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    cloudflare(),
     vue(),
     // vueDevTools(),
     tailwindcss(),

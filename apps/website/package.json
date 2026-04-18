@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
+    "build": "npm run type-check && vite build",
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@cloudflare/vite-plugin": "^1.32.3",
     "@primeuix/themes": "^2.0.3",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
