@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const debugFileLoader = false;
 
 const BOT_TOKEN = process.env?.['DISCORD_BOT_TOKEN'];
 
@@ -18,24 +19,28 @@ const client = new Client({
 
 
 // Util - File Loader Utility:
-async function getAllFiles(dir: string, fileList: string[] = []) {
-    if (!fs.existsSync(dir)) return fileList;
-    const files = fs.readdirSync(dir);
+function getFilePaths(dirPath: string) {
+    let paths: string[] = [];
+    // Confirm Directory:
+    if (!fs.existsSync(dirPath)) return paths;
+    // Get & Filter File Paths:
+    const files = fs.readdirSync(dirPath, { recursive: true, withFileTypes: true })
+        ?.filter(f => !f.isDirectory() && !f.parentPath?.includes('disabled'))
+    // For Each File Path:
     for (const file of files) {
-        const filePath = path.join(dir, file);
-        if (fs.statSync(filePath).isDirectory() && file != 'disabled') {
-            getAllFiles(filePath, fileList); // Recurse into subfolder
-        } else if (file.endsWith('.js') || file.endsWith('.ts')) {
-            fileList.push(filePath);
+        const filePath = path.join(file.parentPath ?? dirPath, file.name);
+        if (debugFileLoader) console.info(`Loaded File:`, filePath)
+        if (filePath?.endsWith('.js') || filePath?.endsWith('.ts')) {
+            paths.push(filePath)
         }
     }
-    return fileList;
+    return paths;
 }
 
 
 // Load & Initialize Commands:
 client.commands = new Collection();
-const commandFiles = await getAllFiles(path.join(__dirname, 'commands'));
+const commandFiles = getFilePaths(path.join(__dirname, 'commands'));
 for (const filePath of commandFiles) {
     const { default: command } = await import(pathToFileURL(filePath)?.href);
     if ('data' in command && 'execute' in command) {
@@ -47,7 +52,7 @@ for (const filePath of commandFiles) {
 
 // Load & Initialize Buttons:
 client.buttons = new Collection();
-const buttonFiles = await getAllFiles(path.join(__dirname, 'buttons'));
+const buttonFiles = getFilePaths(path.join(__dirname, 'buttons'));
 for (const filePath of buttonFiles) {
     const { default: button } = await import(pathToFileURL(filePath).href);
     if ('data' in button && 'execute' in button) {
@@ -58,7 +63,7 @@ for (const filePath of buttonFiles) {
 }
 
 // Load & Initialize Events:
-const eventFiles = await getAllFiles(path.join(__dirname, 'events'));
+const eventFiles = getFilePaths(path.join(__dirname, 'events'));
 for (const filePath of eventFiles) {
     const { default: event } = await import(pathToFileURL(filePath).href);
     if ('execute' in event) {
@@ -76,7 +81,6 @@ for (const filePath of eventFiles) {
 
 
 // - DEBUG - File Loader Utility:
-const debugFileLoader = false;
 if (debugFileLoader) {
     console.log(`[✅] Loaded ${client.commands.size} command(s).`);
     console.log(`[✅] Loaded ${client.buttons.size} button(s).`);
