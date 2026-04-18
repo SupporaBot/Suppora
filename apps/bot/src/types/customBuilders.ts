@@ -44,7 +44,7 @@ export class BotErrorMessageContainer {
 
         const accent_color = level == 'WARN'
             ? COLORS.Orange
-            : COLORS.Aqua
+            : COLORS.Error
 
         return new ContainerBuilder({
             accent_color,
@@ -57,7 +57,7 @@ export class BotErrorMessageContainer {
                     components: [
                         new ButtonBuilder({
                             style: ButtonStyle.Link,
-                            label: '💬 Support Chat',
+                            label: '💬 Bot Support',
                             url: URLS.support.chat
                         }),
                         new ButtonBuilder({
