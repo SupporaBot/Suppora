@@ -34,6 +34,9 @@ async function ensureValidDiscordToken(req: Request, res: Response, next: NextFu
             }
             // Update Auth User:
             const { user: updatedUser, profile: updatedProfile } = await upsertAuthUser(data)
+
+            // Debug Refreshed User:
+            log.for('API').info(`[Auth - Token Refresh] ${updatedProfile.username} has refreshed their Discord tokens!`, { userId: updatedProfile?.discord_id })
             // Update Attached Request User:
             req.auth = {
                 user: updatedUser,

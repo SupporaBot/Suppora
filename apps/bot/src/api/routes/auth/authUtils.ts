@@ -74,8 +74,8 @@ export async function upsertAuthUser(tokenData: DiscordOAuth2TokenResponse) {
             discord_access_token: access_token,
             discord_refresh_token: refresh_token,
             discord_tokens_expires_at: tokens_expire_at
-        })
-            .select()
+        }).select().single()
+
         // Confirm New Profile:
         if (newProfileErr || !newProfile) throw new Error(`[oAuth2 User Upsert]: FAILED to CREATE NEW PROFILE from Token Exchange!`, { cause: { ...newProfileErr, note: 'A NEWLY created auth user has been created for this failed profile!' } })
         // Return Auth User & Profile:

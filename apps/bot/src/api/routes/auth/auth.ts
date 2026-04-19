@@ -93,6 +93,8 @@ authRoutes.get('/discord-callback', async (req, res) => {
                         : URLS.website
                 }
             })
+            // Log User Signed In:
+            log.for('Auth').info(`[✔] ${profile?.username} signed into their account!`)
             // Confirm Magic Link:
             if (linkError || !link) throw new Error(`Discord Auth Callback Error - MAGIC LINK FAILED`, { cause: linkError })
             else {
