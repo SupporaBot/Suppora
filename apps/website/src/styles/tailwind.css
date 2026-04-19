@@ -61,105 +61,65 @@
 /* Button Utilities */
 @utility button-base {
     @apply flex-center bg-bg-2 px-1.75 py-0.75 rounded-md ring-2 ring-ring-2 font-medium text-sm cursor-pointer transition-all;
+    @apply hover:ring-ring-1;
+    @apply disabled:cursor-not-allowed disabled:opacity-60 disabled:!ring-ring-2;
 
-    &:hover {
-        @apply !ring-ring-1;
+    &.button-info {
+        @apply text-info-2;
     }
-    
+
+    &.button-success {
+        @apply text-success-2;
+    }
+
+    &.button-warning {
+        @apply text-warning-2;
+    }
+
+    &.button-danger {
+        @apply text-danger-2;
+    }
 }
 
-
 @utility button-outline {
-    @apply button-base !bg-bg-2 ;
+    @apply button-base !bg-bg-2;
+
+    &.button-info {
+        @apply ring-info-2;
+        @apply hover:!ring-info-1;
+    }
+
+    &.button-success {
+        @apply ring-success-2;
+        @apply hover:!ring-success-1;
+    }
+
+    &.button-warning {
+        @apply ring-warning-2;
+        @apply hover:!ring-warning-1;
+    }
+
+    &.button-danger {
+        @apply ring-danger-2;
+        @apply hover:!ring-danger-1;
+    }
 }
 
 @utility button-dynamic {
     @apply button-base !bg-transparent  !ring-0;
-
-    &:hover {
-        @apply !bg-bg-2 !ring-2;
+    @apply hover:!bg-bg-2 hover:!ring-2;
+    
+    &.button-info { 
+        @apply text-info-2 ring-info-2; 
     }
-}
-
-
-@utility button-info {
-    @apply button-base dark:bg-info-2 bg-[color-mix(in_hsl,var(--c-info-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
-
-    &.button-outline {
-        @apply dark:!ring-info-2 !ring-info-1;
+    &.button-success { 
+        @apply text-success-2 ring-success-2; 
     }
-
-    &.button-dynamic {
-        @apply hover:!ring-info-1;
+    &.button-warning { 
+        @apply text-warning-2 ring-warning-2; 
     }
-
-    &:hover {
-        @apply dark:bg-info-1 bg-[color-mix(in_hsl,var(--c-info-2),var(--c-bg-1)_20%)];
-
-        &.button-outline,
-        &.button-dynamic {
-            @apply dark:!ring-info-1 !ring-info-2;
-        }
-    }
-}
-@utility button-success {
-    @apply button-base dark:bg-success-2 bg-[color-mix(in_hsl,var(--c-success-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
-
-    &.button-outline {
-        @apply dark:!ring-success-2 !ring-success-1;
-    }
-
-    &.button-dynamic {
-        @apply hover:!ring-success-1;
-    }
-
-    &:hover {
-        @apply dark:bg-success-1 bg-[color-mix(in_hsl,var(--c-success-2),var(--c-bg-1)_30%)];
-
-        &.button-outline,
-        &.button-dynamic {
-            @apply dark:!ring-success-1 !ring-success-2;
-        }
-    }
-}
-@utility button-warning {
-    @apply button-base dark:bg-warning-2 bg-[color-mix(in_hsl,var(--c-warning-1),var(--c-bg-1)_30%)] ring-stone-700/90 dark:ring-stone-600;
-
-    &.button-outline {
-        @apply dark:!ring-warning-2 !ring-warning-1;
-    }
-
-    &.button-dynamic {
-        @apply hover:!ring-warning-1;
-    }
-
-    &:hover {
-        @apply dark:bg-warning-1 bg-[color-mix(in_hsl,var(--c-warning-2),var(--c-bg-1)_30%)];
-
-        &.button-outline,
-        &.button-dynamic {
-            @apply dark:!ring-warning-1 !ring-warning-2;
-        }
-    }
-}
-@utility button-danger {
-    @apply button-base dark:bg-danger-2 bg-[color-mix(in_hsl,var(--c-danger-1),var(--c-bg-1)_18%)] ring-stone-700/90 dark:ring-stone-600;
-
-    &.button-outline {
-        @apply dark:!ring-danger-2 !ring-danger-1;
-    }
-
-    &.button-dynamic {
-        @apply hover:!ring-danger-1;
-    }
-
-    &:hover {
-        @apply dark:bg-danger-1 bg-[color-mix(in_hsl,var(--c-danger-2),var(--c-bg-1)_20%)];
-
-        &.button-outline,
-        &.button-dynamic {
-            @apply dark:!ring-danger-1 !ring-danger-2;
-        }
+    &.button-danger { 
+        @apply text-danger-2 ring-danger-2; 
     }
 }
 

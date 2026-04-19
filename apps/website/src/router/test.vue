@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+    import Tooltip from '@/components/Tooltip.vue';
     import { useLayoutStore } from '@/stores/layout';
 
 
@@ -8,8 +9,17 @@
 
 
 <template>
-    <main class="flex w-full grow overflow-auto">
+    <main class="flex-center w-full grow overflow-auto">
 
+        <Tooltip>
+            <template #tip="{ show }">
+                <div @mouseenter="show">
+                    This is the content!
+                </div>
+            </template>
+        </Tooltip>
+
+        <!-- Button Testing -->
         <section class="w-full flex-center flex-col gap-2 p-4">
             <p class="w-full font-bold text-sm uppercase">
                 Button Bases
@@ -31,7 +41,7 @@
 
 
             <span class="w-full flex-center gap-2">
-                <button class="button-success">
+                <button class="button-success button-base">
                     Success
                 </button>
 
@@ -46,7 +56,7 @@
 
 
             <span class="w-full flex-center gap-2">
-                <button class="button-info">
+                <button class="button-info button-base">
                     Info
                 </button>
 
@@ -60,7 +70,7 @@
             </span>
 
             <span class="w-full flex-center gap-2">
-                <button class="button-warning">
+                <button class="button-warning button-base">
                     Warning
                 </button>
 
@@ -74,7 +84,7 @@
             </span>
 
             <span class="w-full flex-center gap-2">
-                <button class="button-danger">
+                <button class="button-danger button-base">
                     Danger
                 </button>
 

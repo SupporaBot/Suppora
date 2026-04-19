@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.32.3",
+    "@floating-ui/vue": "^1.1.11",
     "@primeuix/themes": "^2.0.3",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
