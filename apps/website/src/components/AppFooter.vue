@@ -1,10 +1,9 @@
 <script lang="ts" setup>
     import { URLS, useLayoutStore } from '@/stores/layout';
     import { Icon } from '@iconify/vue'
-    const fallbackUrl = 'https://github.com/SupporaBot'
 
     const layout = useLayoutStore()
-    const colorMode = layout.colorMode()
+    const theme = computed(() => layout.colorTheme)
 
 </script>
 
@@ -69,9 +68,8 @@
             </span>
         </span>
 
-        <button @click="() => { colorMode == 'light' ? colorMode = 'auto' : colorMode = 'light' }"
-            class="self-center flex-center mx-auto gap-0.5">
-            <Icon icon="ph:sun-duotone" v-if="colorMode == 'light'" class="size-4" />
+        <button @click="theme.toggle()" class="self-center flex-center mx-auto gap-0.5">
+            <Icon icon="ph:sun-duotone" v-if="theme.mode == 'light'" class="size-4" />
             <Icon icon="si:moon-duotone" v-else class="size-3.75" />
             Toggle Theme
         </button>

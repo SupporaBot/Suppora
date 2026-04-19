@@ -25,8 +25,23 @@ export const useLayoutStore = defineStore('nav', () => {
     const colorMode = () => (useColorMode({
         storageKey: 'suppora-color-scheme',
         initialValue: 'dark',
-        attribute: 'data-theme'
+        attribute: 'data-theme',
     }))
+
+    // App Wide Color Theme:
+    const useColorTheme = () => {
+        const mode = useColorMode({
+            storageKey: 'suppora-color-scheme',
+            initialValue: 'dark',
+            attribute: 'data-theme',
+        })
+        function toggle() {
+            if (mode.value == 'dark' || mode.value == 'auto') mode.value = 'light'
+            else mode.value = 'dark'
+        }
+        return { mode, toggle }
+    }
+    const colorTheme = useColorTheme()
 
     // Site Header - State:
     const useAppHeader = () => {
@@ -54,7 +69,7 @@ export const useLayoutStore = defineStore('nav', () => {
         /** `App Navigation` states and methods. */
         nav,
         /** Main controller and value for current selected site theme. */
-        colorMode,
+        colorTheme,
         /** Reactive App Header Values */
         appHeader,
         /** Reactive App Footer Values */

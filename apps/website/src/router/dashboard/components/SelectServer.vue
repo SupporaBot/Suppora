@@ -12,6 +12,10 @@
         const aa = a.bot_installed ? 1 : 0;
         const bb = b.bot_installed ? 1 : 0;
         return (bb - aa)
+    })?.sort((a, b) => {
+        const aa = a.can_manage ? 1 : 0;
+        const bb = b.can_manage ? 1 : 0;
+        return (bb - aa)
     }))
 
     // Search Guilds Input:
@@ -20,6 +24,7 @@
 
     // Fn - Select Server:
     function selectServer(g: API_SelfUserIdentity_Guild) {
+        if (!g.can_manage) return alert('No access!')
         if (!g.bot_installed) {
             const r = confirm('Are you sure you want to invite the bot to this server?')
             if (r) window.open(URLS.invite, '_blank')
@@ -35,7 +40,7 @@
 
             <span class="w-full flex max-sm:justify-center items-center flex-row gap-1">
                 <Icon icon="fa7-solid:clipboard-list" class="size-7" />
-                <p class="text-xl font-bold"> Select Server </p>
+                <p class="text-2xl font-bold"> Select Server </p>
             </span>
 
             <div class="flex-center w-full h-fit">
@@ -58,17 +63,25 @@
 
                 <!-- Guild's List -->
                 <ul class="gap-3.5 flex-center items-stretch px-4 p-2 my-2 w-full h-fit">
-                    <button v-for="g in inputFilteredGuilds" :title="g?.name" @click="selectServer(g)"
-                        class="bg-bg-3 grow p-3 px-4 gap-2! flex-col! button-base rounded-md">
+                    <button v-for="g in inputFilteredGuilds" :disabled="!g.can_manage" :title="g?.name"
+                        @click="selectServer(g)"
+                        class="bg-bg-3 relative overflow-clip grow p-3 px-4 gap-2! flex-col! button-base rounded-md">
                         <img :src="g?.icon ?? '/discord.png'" class="size-17 rounded-md border border-ring-3" />
                         <p class="font-bold text-wrap">
                             {{ g.name }}
                         </p>
 
-                        <span v-if="!g.bot_installed"
+                        <span v-if="!g.bot_installed && g.can_manage"
                             class="bg-bg-4 ring-2 ring-ring-3 rounded-lg flex-center flex-row px-2 py-0">
                             <Icon icon="ic:baseline-discord" class="size-4.5 p-0.5 mr-0.5 opacity-50 " />
                             <p class="text-[11px]! font-light"> Invite Needed </p>
+                        </span>
+
+                        <!-- No Access - Overlay -->
+                        <span v-if="!g.can_manage"
+                            class="absolute bg-black/40 text-white w-full h-full flex-col flex-center grow">
+                            <Icon icon="mdi:lock" class="size-5.5" />
+                            <p class="font-black text-lg"> No Access</p>
                         </span>
 
                     </button>
@@ -78,9 +91,8 @@
 
             <div class="flex-center w-full p-2 gap-2 ">
                 <p class="text-text-2 text-xs w-full">
-                    Not seeing the right data? Make sure you're signed into the correct <RouterLink to="/account"
-                        class="text-info-2 hover:underline">account</RouterLink> with valid Discord
-                    access.
+                    Not seeing the right data? You can refresh your Discord data on your <RouterLink to="/account"
+                        class="text-info-2 hover:underline">account</RouterLink> page.
                 </p>
 
                 <RouterLink to="/account" class="hidden button-outline hover:!ring-brand-2 bg-bg-3! active:scale-95">

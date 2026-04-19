@@ -14,7 +14,7 @@
 
   <AppHeader />
   <AppNavigation />
-  <span class="block w-full" :style="{ height: headerHeight }" />
+  <div class="block w-full" :style="{ height: headerHeight }" />
 
   <RouterView v-slot="{ Component }">
     <Transition name="blur-fade" mode="out-in">
