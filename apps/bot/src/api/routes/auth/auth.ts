@@ -1,4 +1,4 @@
-import crypto from 'crypto'
+import crypto, { UUID } from 'crypto'
 import express from "express";
 import { log } from "../../../utils/logs/logs";
 import { URLS } from "../../../utils/core";
@@ -6,6 +6,7 @@ import { DiscordAPIError, OAuth2Scopes } from "discord.js";
 import axios from "axios";
 import { supabase } from "../../../utils/database/supabase";
 import { DiscordOAuth2TokenResponse, upsertAuthUser } from './authUtils';
+import { LRUCache } from 'lru-cache/raw';
 
 
 // ENV Variables:
@@ -29,18 +30,18 @@ const oAuthUrl = environment == 'production'
 // Router:
 const authRoutes = express.Router({ mergeParams: true })
 
+// State Cache - /sign-in & /discord-callback:
+const oAuthStatesCached = new LRUCache<UUID, true>({
+    ttl: (60_000 * 5),
+    max: 100
+})
 
 // ALL - Sign In - Discord oAuth Prompt
 // URL: https://api.suppora.app/v1/auth/sign-in
 authRoutes.all(`/sign-in`, (req, res) => {
     // Create OAuth State:
     const state = crypto.randomUUID()
-    res.cookie('oauth_state', state, {
-        maxAge: 60_000 * 7,
-        secure: process.env.ENVIRONMENT != 'development' ? true : false,
-        httpOnly: true,
-        sameSite: process.env.ENVIRONMENT != 'development' ? 'none' : 'lax'
-    })
+    oAuthStatesCached.set(state, true)
     // Redirect User to Discord oAuth:
     return res.redirect(oAuthUrl + `&state=${state}`)
 })
@@ -53,15 +54,15 @@ authRoutes.get('/discord-callback', async (req, res) => {
         // Redirect - FAILED - Missing Code/Error Received from Discord:
         if (error) return res.redirect(URLS.website + `/sign-in?failed=true&reason=${encodeURI(String(error))}`)
         if (!code) return res.redirect(URLS.website + `/sign-in?failed=true&reason=missing+code`)
-        if (!state) return res.redirect(URLS.website + `/sign-in?failed=true&reason=oAuth+state`)
+        if (!state) return res.redirect(URLS.website + `/sign-in?failed=true&reason=missing+oAuth+state`)
 
         // Confirm oAuth State:
-        const stateCookie = req.cookies?.oauth_state;
-        if (!stateCookie || state != stateCookie) {
-            log.for('Auth').error(`FAILED - Discord AUTH Callback - Missing/Invalid State`, { states: { from_discord: state, from_cookie: stateCookie } })
-            return res.redirect(URLS.website + `/sign-in?failed=true&reason=oAuth+state`)
+        const cachedState = oAuthStatesCached.get(state as UUID)
+        if (!cachedState) {
+            log.for('Auth').error(`FAILED - Discord AUTH Callback - Missing/Invalid State`, { states: { from_discord: state, from_cache: cachedState } })
+            return res.redirect(URLS.website + `/sign-in?failed=true&reason=invalid+oAuth+state`)
         }
-        res.clearCookie('oauth_state');
+        oAuthStatesCached.delete(state as UUID)
 
         // Exchange Code for Access Token(s):
         const { data, status } = await axios.post<DiscordAPIError | DiscordOAuth2TokenResponse>('https://discord.com/api/oauth2/token',

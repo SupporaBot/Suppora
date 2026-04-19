@@ -32,19 +32,19 @@ export const COLORS = {
 
 
 export class URLS {
-    static website = `https://suppora.app`
-    static dashboard = this.website + `/dashboard`
-    static docs = `https://docs.suppora.app`
+    static website = `https://suppora.app` as const
+    static dashboard = this.website + `/dashboard` as `${typeof this.website} + /dashboard`
+    static docs = `https://docs.suppora.app` as const
 
-    static invite = `https://invite.suppora.app`
+    static invite = `https://invite.suppora.app` as const
 
     static support = {
         chat: `https://discord.gg/jQjWxkbgbT`,
         site: `https://suppora.app/support`
-    }
+    } as const
 
-    static community = `https://discord.gg/pEVXUpBzZs`
-    static pricing = `https://suppora.app/pricing`
+    static community = `https://discord.gg/pEVXUpBzZs` as const
+    static pricing = `https://suppora.app/pricing` as const
 }
 export class IMAGE_URLS {
 
