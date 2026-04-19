@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
 import { Colors as DJSColors } from "discord.js";
 import { BotEmojiData, BotEmojiName } from "./bot/emojis";
+import { env } from "process";
 
 export const CORE = {
     /** Currently available Discord Bot {@linkcode Client} (if any). */
@@ -49,11 +50,11 @@ export class URLS {
 export class IMAGE_URLS {
 
     // ! PROD: Change Me!
-    static w = 'https://suppora.pages.dev' as undefined
+    static websiteRoot = process.env.ENVIRONMENT != 'production' ? 'https://suppora.pages.dev' : URLS.website
 
     static logo = {
-        dark: (this?.w + '/logo.png'),
-        light: (this.w + '/logo-light.png')
+        dark: (this?.websiteRoot + '/logo.png'),
+        light: (this.websiteRoot + '/logo-light.png')
     }
 
     static discord_logo: [
@@ -65,4 +66,3 @@ export class IMAGE_URLS {
         'https://cdn.discordapp.com/embed/avatars/5.png'
     ]
 }
-IMAGE_URLS.w = undefined
