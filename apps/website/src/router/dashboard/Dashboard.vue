@@ -5,19 +5,32 @@
     import DashboardDataFailure from './components/DashboardDataFailure.vue';
     import DashboardView from './DashboardView.vue';
     import SelectServer from './components/SelectServer.vue';
+    import { useLayoutStore } from '@/stores/layout';
 
 
     // Services:
     const dashboard = useDashboardStore()
     const auth = useAuthStore()
+    const layout = useLayoutStore()
     const authReady = computed(() => auth.authReady)
     const dashboardDataFailure = ref(false)
+
+    // Redirect - Not Signed In:
+    onMounted(async () => {
+        layout.appFooter.isVisible = false
+        await auth.waitForAuthReady(10_000)
+        if (!auth.signedIn) auth.signIn()
+    })
+
+    onUnmounted(() => {
+        layout.appFooter.isVisible = true
+    })
 
 </script>
 
 
 <template>
-    <main class="flex h-full w-full min-h-[87dvh] grow">
+    <main class="flex flex-col h-full w-full min-h-[87dvh] grow">
         <Transition name="blur-fade" mode="out-in">
             <!-- Loading Card -->
             <LoadingDashboard v-if="!authReady" />

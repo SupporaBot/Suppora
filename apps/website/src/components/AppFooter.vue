@@ -2,14 +2,23 @@
     import { URLS, useLayoutStore } from '@/stores/layout';
     import { Icon } from '@iconify/vue'
 
+    // Services:
     const layout = useLayoutStore()
     const theme = computed(() => layout.colorTheme)
+    const show = computed(() => layout.appFooter.isVisible)
+
+    // Dynamic Footer Size:
+    const footerEl = useTemplateRef('footerRef')
+    const size = useElementSize(footerEl, undefined, { box: 'border-box' })
+    watch(() => size.height.value, (h) => {
+        if (h) layout.appFooter.currentHeight = h // .updateHeight(h)
+    }, { immediate: true })
 
 </script>
 
 
 <template>
-    <footer
+    <footer v-if="show" ref="footerRef"
         class="w-full z-4 flex flex-wrap items-center max-sm:flex-col md:flex-row gap-3 p-4 bg-bg-2 ring-ring-soft ring-2"
         :class="{
             'rounded-tl-2xl': layout.appFooter.rounded,

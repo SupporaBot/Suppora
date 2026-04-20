@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+    import { useAuthStore } from '@/stores/auth';
     import { useLayoutStore } from '@/stores/layout';
     import { RouterLink } from 'vue-router';
 
@@ -6,6 +7,7 @@
     // Services:
     const layout = useLayoutStore()
     const nav = layout.nav
+    const auth = useAuthStore()
 
 </script>
 
@@ -59,7 +61,7 @@
                         <div class="bg-bg-3 rounded-full from-ring-2 mx-auto flex grow h-1! my-2" />
                     </span>
 
-                    <NavLinkButton to="/account" title="My Account" icon="mdi:user" />
+                    <NavLinkButton to="/account" :title="auth.signedIn ? 'My Account' : 'Sign In'" icon="mdi:user" />
                 </div>
 
             </div>

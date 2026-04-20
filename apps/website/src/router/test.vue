@@ -1,9 +1,16 @@
 <script lang="ts" setup>
     import Tooltip from '@/components/Tooltip.vue';
     import { useLayoutStore } from '@/stores/layout';
+    import { ApiRequest } from '@/utils/api';
+    import { asyncState } from '@/utils/asyncState';
 
 
     const nav = useLayoutStore()
+
+    const fetchTest = asyncState(() => ApiRequest({ url: '/system/status', method: 'GET' }), {
+        cooldown: 5
+    })
+    const fetchData = computed(() => fetchTest.state.value?.data)
 
 </script>
 
@@ -19,8 +26,28 @@
             </template>
         </Tooltip>
 
+        <div>
+            Fetch Test:
+            <button @click="async () => await fetchTest.get()" class="button-base">
+                Fetch
+            </button>
+            <button @click="console.log(fetchTest.meta.cooldown_secs_remaining())" class="button-base">
+                Remaining Cooldown
+            </button>
+            <span>
+                Data: {{ !!fetchData }}
+                Loading: {{ fetchTest.loading.value }}
+                Ready: {{ fetchTest.ready.value }}
+
+                Count: {{ fetchTest.meta.count }}
+                Last Fetched: {{ fetchTest.meta.last_fetched_at?.toISO() }}
+            </span>
+
+
+        </div>
+
         <!-- Button Testing -->
-        <section class="w-full flex-center flex-col gap-2 p-4">
+        <section hidden class="w-full flex-center flex-col gap-2 p-4">
             <p class="w-full font-bold text-sm uppercase">
                 Button Bases
             </p>

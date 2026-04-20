@@ -8,7 +8,7 @@
     const auth = useAuthStore()
     const dashboard = useDashboardStore()
 
-    const userGuilds = computed(() => auth.identity?.guilds?.sort((a, b) => {
+    const userGuilds = computed(() => auth.identity?.state?.guilds?.sort((a, b) => {
         const aa = a.bot_installed ? 1 : 0;
         const bb = b.bot_installed ? 1 : 0;
         return (bb - aa)

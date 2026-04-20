@@ -21,13 +21,6 @@ export const useLayoutStore = defineStore('nav', () => {
     // Application Wide - Scroll Lock:
     const scrollLock = useScrollLock(window)
 
-    // Application Color Mode - Config / Value:
-    const colorMode = () => (useColorMode({
-        storageKey: 'suppora-color-scheme',
-        initialValue: 'dark',
-        attribute: 'data-theme',
-    }))
-
     // App Wide Color Theme:
     const useColorTheme = () => {
         const mode = useColorMode({
@@ -56,8 +49,12 @@ export const useLayoutStore = defineStore('nav', () => {
 
     // Site Footer - State:
     const useAppFooter = () => {
+        const isVisible = ref(true)
+        const currentHeight = ref(0)
         const rounded = ref(true)
         return {
+            isVisible,
+            currentHeight,
             rounded
         }
     }
