@@ -3,6 +3,7 @@
   import AppFooter from './components/AppFooter.vue';
   import AppHeader from './components/AppHeader.vue';
   import { useLayoutStore } from './stores/layout';
+  import Notifier from './router/account/components/notifier/notifier.vue';
 
   // Services:
   const nav = useLayoutStore()
@@ -24,6 +25,8 @@
 
 
   <AppFooter />
+
+  <Notifier />
 
 </template>
 

@@ -14,6 +14,8 @@ declare module 'vue' {
     AppFooter: typeof import('./../components/AppFooter.vue')['default']
     AppHeader: typeof import('./../components/AppHeader.vue')['default']
     AppNavigation: typeof import('./../components/nav/AppNavigation.vue')['default']
+    Button: typeof import('primevue/button')['default']
+    ColorThemeButton: typeof import('./../components/ColorThemeButton.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
     NavLinkButton: typeof import('./../components/nav/NavLinkButton.vue')['default']
     PixelSnow: typeof import('./../components/VueBits/PixelSnow.vue')['default']

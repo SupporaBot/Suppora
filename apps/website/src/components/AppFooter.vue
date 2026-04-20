@@ -4,7 +4,6 @@
 
     // Services:
     const layout = useLayoutStore()
-    const theme = computed(() => layout.colorTheme)
     const show = computed(() => layout.appFooter.isVisible)
 
     // Dynamic Footer Size:
@@ -77,11 +76,7 @@
             </span>
         </span>
 
-        <button @click="theme.toggle()" class="self-center flex-center mx-auto gap-0.5">
-            <Icon icon="ph:sun-duotone" v-if="theme.mode == 'light'" class="size-4" />
-            <Icon icon="si:moon-duotone" v-else class="size-3.75" />
-            Toggle Theme
-        </button>
+        <ColorThemeButton />
 
     </footer>
 </template>

@@ -137,18 +137,18 @@
 
         <!-- Actions -->
         <div class="flex-center max-sm:flex-col w-full p-3 gap-4.5 mb-2.25">
-            <button @click="auth.signOut()" title="Sign Out"
+            <Button unstyled @click="auth.signOut()" title="Sign Out"
                 class="ring-danger-3 gap-0.75 hover:!ring-danger-2 button-outline bg-bg-3! active:scale-95">
                 <Icon icon="line-md:logout" class="size-5.5 py-px" />
                 Sign Out
-            </button>
+            </Button>
 
-            <button @click="auth.identity.execute(0, true)" :disabled="isNextRefreshCooldown"
+            <Button unstyled @click="auth.identity.execute(0, true)" :disabled="isNextRefreshCooldown"
                 title="Resync Discord Data"
                 class=" gap-0.75 hover:!ring-brand-2 disabled:cursor-not-allowed disabled:!ring-ring-2 disabled:scale-100! button-outline bg-bg-3! active:scale-95">
                 <Icon icon="ic:baseline-discord" class="size-4.5 py-px opacity-60" />
                 <p class="text-xs opacity-70"> Resync Data </p>
-            </button>
+            </Button>
 
             <span class="w-full flex-center">
                 <RouterLink to="/privacy" class="text-text-3 hover:text-info-2 mt-1 hover:underline text-xs">
