@@ -24,7 +24,7 @@
 
     <span class="absolute inset-0">
 
-        <nav class="w-13.5! z-2! fixed flex flex-col items-center left-0 h-dvh bg-bg-2 border-r-2 border-ring-soft transition-all overflow-clip"
+        <nav class="w-13.5! z-3! fixed flex flex-col items-center left-0 h-dvh bg-bg-2 border-r-2 border-ring-soft transition-all overflow-clip overflow-y-auto"
             :class="{ 'w-47!': dashboard.nav.expanded }"
             :style="{ paddingTop: `${layout.appHeader.currentHeight ?? 0}px` }">
 
@@ -91,7 +91,7 @@
     <!-- Nav Overlay - Max MD Screen -->
     <Transition name="fade">
         <span @click="dashboard.nav.expanded = false" v-if="dashboard.nav.expanded"
-            class="z-1 absolute inset-0 md:hidden! flex grow w-full h-full bg-black/25 dark:bg-black/40 blur-xs" />
+            class="z-2 absolute inset-0 md:hidden! flex grow w-full h-full bg-black/25 dark:bg-black/40 blur-xs" />
     </Transition>
 
 </template>

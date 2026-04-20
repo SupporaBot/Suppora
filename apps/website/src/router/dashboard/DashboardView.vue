@@ -35,9 +35,9 @@
         <DashboardNav />
 
         <!-- Main Dashboard Content -->
-        <div class="flex w-full flex-row grow flex-center gap-3 p-4 pb-0 ml-13.5 overflow-y-auto"
+        <div class="flex w-full flex-row grow flex-center gap-3 z-1! p-4 pb-0 ml-13.5 overflow-y-auto"
             :class="{ 'md:ml-47': dashboard.nav.expanded }">
-            <div class="flex grow w-full h-full bg-emerald-700/30">
+            <div class="flex grow w-full h-full">
 
                 <!-- Dashboard Tab View(s): -->
                 <Transition name="blur-fade" mode="out-in">
