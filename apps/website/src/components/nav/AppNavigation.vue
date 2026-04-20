@@ -100,6 +100,9 @@
                         Terms & Conditions
                     </RouterLink>
                 </div>
+
+                <ColorThemeButton icon-class="size-3!" text-class="text-[10px]! font-light!" />
+
             </div>
 
         </nav>

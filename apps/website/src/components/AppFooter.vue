@@ -86,8 +86,8 @@
 
     @reference "@/styles/main.css";
 
-    button {
+    /* button {
         @apply bg-bg-4 border-2 border-ring-2 px-2 py-0.75 text-xs rounded-md cursor-pointer;
-    }
+    } */
 
 </style>

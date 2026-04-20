@@ -15,7 +15,8 @@
 
 
 <template>
-    <Button unstyled @click="theme.toggle()" class="self-center flex-center mx-auto gap-0.5" :class="p.rootClass">
+    <Button unstyled @click="theme.toggle()" class="self-center button-base bg-bg-3 flex-center mx-auto gap-0.5"
+        :class="p.rootClass">
         <div class="relative aspect-square size-4" :class="p.iconClass">
             <Transition name="blur-fade" type="transition">
                 <Icon icon="ph:sun-duotone" v-if="theme.mode == 'light'" class="size-full absolute mr-px" />
