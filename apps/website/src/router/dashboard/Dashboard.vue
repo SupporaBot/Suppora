@@ -33,7 +33,7 @@
     <main class="flex flex-col h-full w-full min-h-[87dvh] grow">
         <Transition name="blur-fade" mode="out-in">
             <!-- Loading Card -->
-            <LoadingDashboard v-if="!authReady" />
+            <LoadingDashboard v-if="!authReady || !auth.signedIn" />
 
             <!-- Select Server Card -->
             <SelectServer v-else-if="!dashboard.guildId" />

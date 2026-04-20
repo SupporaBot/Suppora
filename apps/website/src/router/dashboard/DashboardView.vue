@@ -1,6 +1,5 @@
 <script lang="ts" setup>
     import { useLayoutStore } from '@/stores/layout';
-    import Dashboard from './Dashboard.vue';
     import { useDashboardStore } from '@/stores/dashboard';
     import { useAuthStore } from '@/stores/auth';
     import DashboardNav from './components/nav/dashboardNav.vue';
@@ -38,7 +37,7 @@
         <!-- Main Dashboard Content -->
         <div class="flex w-full flex-row grow flex-center gap-3 p-4 pb-0 ml-13.5 overflow-y-auto"
             :class="{ 'md:ml-47': dashboard.nav.expanded }">
-            <div class="flex grow w-full h-full bg-emerald-700">
+            <div class="flex grow w-full h-full bg-emerald-700/30">
 
                 <!-- Dashboard Tab View(s): -->
                 <Transition name="blur-fade" mode="out-in">
