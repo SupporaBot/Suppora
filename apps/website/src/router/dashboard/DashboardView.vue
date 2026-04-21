@@ -5,6 +5,8 @@
     import DashboardNav from './components/nav/dashboardNav.vue';
     import TicketsTab from './components/tabs/tickets/TicketsTab.vue';
     import PanelsTab from './components/tabs/panels/PanelsTab.vue';
+    import TeamsTab from './components/tabs/teams/TeamsTab.vue';
+    import SettingsTab from './components/tabs/settings/SettingsTab.vue';
 
     // Services:
     const layout = useLayoutStore()
@@ -45,6 +47,10 @@
                     <TicketsTab v-if="currentTab == 'Tickets'" />
 
                     <PanelsTab v-else-if="currentTab == 'Panels'" />
+
+                    <TeamsTab v-else-if="currentTab == 'Teams'" />
+
+                    <SettingsTab v-else-if="currentTab == 'Settings'" />
 
                 </Transition>
 

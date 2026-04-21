@@ -101,7 +101,7 @@
                     </RouterLink>
                 </div>
 
-                <ColorThemeButton icon-class="size-3!" text-class="text-[10px]! font-light!" />
+                <ThemeToggleButton icon-class="size-3!" text-class="text-[10px]! font-light!" />
 
             </div>
 

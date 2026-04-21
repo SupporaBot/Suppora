@@ -76,7 +76,7 @@
             </span>
         </span>
 
-        <ColorThemeButton />
+        <ThemeToggleButton />
 
     </footer>
 </template>

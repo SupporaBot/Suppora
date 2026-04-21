@@ -15,14 +15,17 @@ declare module 'vue' {
     AppHeader: typeof import('./../components/AppHeader.vue')['default']
     AppNavigation: typeof import('./../components/nav/AppNavigation.vue')['default']
     Button: typeof import('primevue/button')['default']
-    ColorThemeButton: typeof import('./../components/ColorThemeButton.vue')['default']
+    Dialog: typeof import('primevue/dialog')['default']
+    Form: typeof import('@primevue/forms/form')['default']
     Icon: typeof import('@iconify/vue')['Icon']
+    InputText: typeof import('primevue/inputtext')['default']
     NavLinkButton: typeof import('./../components/nav/NavLinkButton.vue')['default']
     PixelSnow: typeof import('./../components/VueBits/PixelSnow.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Skeleton: typeof import('primevue/skeleton')['default']
+    ThemeToggleButton: typeof import('./../components/ThemeToggleButton.vue')['default']
     Tooltip: typeof import('./../components/Tooltip.vue')['default']
   }
 }
