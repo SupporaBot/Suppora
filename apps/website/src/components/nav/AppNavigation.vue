@@ -87,14 +87,14 @@
             <!-- Nav Footer -->
             <div class="w-full flex flex-col gap-0.5 p-2 text-xs flex-center">
                 <div class="w-fit" @click="nav.close()">
-                    <RouterLink to="/privacy" active-class="text-brand-2!"
+                    <RouterLink to="/privacy" active-class="text-brand-2! dark:!text-brand-3"
                         class="text-xs transition-all text-text-3 hover:underline hover:text-text-2"
                         :class="{ 'text-text-2': true }">
                         Privacy Policy
                     </RouterLink>
                 </div>
-                <div class="w-fit" @click="nav.close()">
-                    <RouterLink to="/terms" active-class="text-brand-2!"
+                <div class="w-fit mb-2" @click="nav.close()">
+                    <RouterLink to="/terms" active-class="text-brand-2! dark:!text-brand-3"
                         class="text-xs transition-all text-text-3 hover:underline hover:text-text-2"
                         :class="{ 'text-text-2': true }">
                         Terms & Conditions
