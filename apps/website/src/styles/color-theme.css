@@ -1,83 +1,89 @@
  /* Light Theme Colors */
  :root {
-    /* Background Colors */
-    --c-bg-1: #F0F0F0;
-    --c-bg-2: #cecece;
-    --c-bg-3: #b6b6b6;
-    --c-bg-4: #acacac;
-    --c-bg-5: #979797;
+   /* Background Colors */
+   --c-bg-1: #F0F0F0;
+   --c-bg-2: #cecece;
+   --c-bg-3: #b6b6b6;
+   --c-bg-4: #acacac;
+   --c-bg-5: #979797;
 
-    /* Text Colors */
-    --c-text-1: #111111;
-    --c-text-2: #3b3b3b;
-    --c-text-3: #636363;
+   /* Text Colors */
+   --c-text-1: #111111;
+   --c-text-2: #3b3b3b;
+   --c-text-3: #636363;
 
-    /* Border/Ring Colors */
-    --c-ring-1: color-mix(in hsl, var(--c-text-1) 100%, var(--c-bg-1) 50% );
-    --c-ring-2: color-mix(in hsl, var(--c-text-2) 100%, var(--c-bg-1) 50% );
-    --c-ring-3: color-mix(in hsl, var(--c-text-3) 100%, var(--c-bg-1) 50% );
-    --c-ring-soft: color-mix(in oklab, var(--c-ring-2), var(--c-bg-1) 50%);
+   /* Border/Ring Colors */
+   --c-ring-1: color-mix(in hsl, var(--c-text-1) 100%, var(--c-bg-1) 50% );
+   --c-ring-2: color-mix(in hsl, var(--c-text-2) 100%, var(--c-bg-1) 50% );
+   --c-ring-3: color-mix(in hsl, var(--c-text-3) 100%, var(--c-bg-1) 50% );
+   --c-ring-soft: color-mix(in oklab, var(--c-ring-2), var(--c-bg-1) 50%);
 
-    /* Regular Colors */
-    /* --c-brand-1: #d47b27;
-    --c-brand-2: #b46f2d;
-    --c-brand-3: #80552e; */
-    
-    
-    --c-brand-1: #9c64f5;
-    --c-brand-2: #734bb2;
-    --c-brand-3: #4d3473;
+   /* Regular Colors */
+   /* --c-brand-1: #9c64f5;
+   --c-brand-2: #734bb2;
+   --c-brand-3: #6535b1;
+   --c-brand-3: #4d3473;
+   --c-brand-4: #4d3473;
+   --c-brand-5: #4d3473; */
 
-    --c-success-1: hsl(148, 73%, 38%);
-    --c-success-2: hsl(145, 60%, 32%);
-    --c-success-3: hsl(142, 49%, 23%);
+   --c-brand-1: #823fde;
+   --c-brand-2: #844ad0;
+   --c-brand-3: #8655c3;
+   --c-brand-4: #865eb6;
+   --c-brand-5: #865eb6;
 
-    --c-info-1: hsl(199, 92%, 43%); 
-    --c-info-2: #1d74a6;
-    --c-info-3: #1e4d6b;
 
-    --c-warning-1: #ff6900;
-    --c-warning-2: #ba4f0d;
-    --c-warning-3: #793710;
 
-    --c-danger-1: #e85151;
-    --c-danger-2: #a13c3a;
-    --c-danger-3: #5f2825;
-    
-    
-    /* 
-    --c-info-1: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 20%); 
-    --c-info-2: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 35%);
-    --c-info-3: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 50%);
-    
-    --c-warning-1: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 20%);
-    --c-warning-2: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 35%);
-    --c-warning-3: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 50%);
+   --c-success-1: hsl(148, 73%, 38%);
+   --c-success-2: hsl(145, 60%, 32%);
+   --c-success-3: hsl(142, 49%, 23%);
 
-    --c-danger-1: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 20%);
-    --c-danger-2: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 35%);
-    --c-danger-3: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 50%);
-    */
+   --c-info-1: hsl(199, 92%, 43%); 
+   --c-info-2: #1d74a6;
+   --c-info-3: #1e4d6b;
+
+   --c-warning-1: #ff6900;
+   --c-warning-2: #ba4f0d;
+   --c-warning-3: #793710;
+
+   --c-danger-1: #e85151;
+   --c-danger-2: #a13c3a;
+   --c-danger-3: #5f2825;
+   
+   
+   /* 
+   --c-info-1: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 20%); 
+   --c-info-2: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 35%);
+   --c-info-3: color-mix(in hsl, var(--color-sky-500), var(--c-bg-1) 50%);
+   
+   --c-warning-1: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 20%);
+   --c-warning-2: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 35%);
+   --c-warning-3: color-mix(in hsl, var(--color-orange-500), var(--c-bg-1) 50%);
+
+   --c-danger-1: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 20%);
+   --c-danger-2: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 35%);
+   --c-danger-3: color-mix(in hsl, var(--color-rose-500), var(--c-bg-1) 50%);
+   */
  }
 
 
 
  /* Dark Theme Colors */
  [data-theme="dark"] {
-    /* Background Colors */
-    --c-bg-1: #111111;
-    --c-bg-2: color-mix(in hsl, #272727, var(--c-bg-1) 50%);
-    --c-bg-3: color-mix(in hsl, #3E3E3E, var(--c-bg-1) 50%);
-    --c-bg-4: color-mix(in hsl, #565656, var(--c-bg-1) 50%);
-    --c-bg-5: color-mix(in hsl, #686868, var(--c-bg-1) 30%);
+   /* Background Colors */
+   --c-bg-1: #111111;
+   --c-bg-2: color-mix(in hsl, #272727, var(--c-bg-1) 50%);
+   --c-bg-3: color-mix(in hsl, #3E3E3E, var(--c-bg-1) 50%);
+   --c-bg-4: color-mix(in hsl, #565656, var(--c-bg-1) 50%);
+   --c-bg-5: color-mix(in hsl, #686868, var(--c-bg-1) 30%);
 
-    /* Text Colors */
-    --c-text-1: #F0F0F0;
-    --c-text-2: #adadad;
-    --c-text-3: #5e5e5e;
-    
-    /* Border/Ring Colors */
-    --c-ring-1: color-mix(in hsl, var(--c-text-1), var(--c-bg-1) 65% );
-    --c-ring-2: color-mix(in hsl, var(--c-text-2), var(--c-bg-1) 72% );
-    --c-ring-3: color-mix(in hsl, var(--c-text-3), var(--c-bg-1) 50% );
+   /* Text Colors */
+   --c-text-1: #F0F0F0;
+   --c-text-2: #adadad;
+   --c-text-3: #5e5e5e;
+   
+   /* Border/Ring Colors */
+   --c-ring-1: color-mix(in hsl, var(--c-text-1), var(--c-bg-1) 65% );
+   --c-ring-2: color-mix(in hsl, var(--c-text-2), var(--c-bg-1) 72% );
+   --c-ring-3: color-mix(in hsl, var(--c-text-3), var(--c-bg-1) 50% );
 }

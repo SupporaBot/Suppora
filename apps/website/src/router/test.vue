@@ -18,15 +18,28 @@
 <template>
     <main class="flex-center w-full grow overflow-auto">
 
-        <Tooltip>
-            <template #tip="{ show }">
-                <div @mouseenter="show">
-                    This is the content!
-                </div>
-            </template>
-        </Tooltip>
+        <!-- Brand Colors -->
+        <span class="w-full flex-center p-4 gap-4">
+            <div class="w-45 h-25 bg-brand-1">
+                Brand 1
+            </div>
+            <div class="w-45 h-25 bg-brand-2">
+                Brand 2
+            </div>
+            <div class="w-45 h-25 bg-brand-3">
+                Brand 3
+            </div>
+            <div class="w-45 h-25 bg-brand-4">
+                Brand 4
+            </div>
+            <div class="w-45 h-25 bg-brand-5">
+                Brand 5
+            </div>
+        </span>
 
-        <div>
+
+        <!-- Async State - Test -->
+        <div hidden>
             Fetch Test:
             <button @click="async () => await fetchTest.get()" class="button-base">
                 Fetch

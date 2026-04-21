@@ -14,6 +14,7 @@
     "@cloudflare/vite-plugin": "^1.32.3",
     "@floating-ui/vue": "^1.1.11",
     "@primeuix/themes": "^2.0.3",
+    "@primevue/forms": "^4.5.5",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
     "@tailwindcss/vite": "^4.2.2",
@@ -25,7 +26,8 @@
     "tailwindcss": "^4.2.2",
     "three": "^0.183.2",
     "vue": "^3.5.31",
-    "vue-router": "^5.0.4"
+    "vue-router": "^5.0.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@iconify/vue": "^5.0.0",

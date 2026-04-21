@@ -5,16 +5,15 @@ import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
 import { type PrimeVueConfiguration } from 'primevue'
-import Aura from '@primeuix/themes/aura';
+
 import { initializeAuthStateWatcher } from './stores/auth'
+import { PrimeVueTheme } from './styles/PrimeVueTheme';
 
 const app = createApp(App)
 
 // Plugins
 app.use(PrimeVue, <PrimeVueConfiguration>{
-    theme: {
-        preset: Aura
-    },
+    theme: PrimeVueTheme,
     ripple: true
 })
 app.use(createPinia())

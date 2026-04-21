@@ -19,6 +19,7 @@ declare module 'vue' {
     Form: typeof import('@primevue/forms/form')['default']
     Icon: typeof import('@iconify/vue')['Icon']
     InputText: typeof import('primevue/inputtext')['default']
+    MultiSelect: typeof import('primevue/multiselect')['default']
     NavLinkButton: typeof import('./../components/nav/NavLinkButton.vue')['default']
     PixelSnow: typeof import('./../components/VueBits/PixelSnow.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
@@ -26,6 +27,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Skeleton: typeof import('primevue/skeleton')['default']
     ThemeToggleButton: typeof import('./../components/ThemeToggleButton.vue')['default']
+    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Tooltip: typeof import('./../components/Tooltip.vue')['default']
   }
 }
