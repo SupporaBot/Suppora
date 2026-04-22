@@ -13,7 +13,7 @@
     const navExpanded = computed(() => dashboard.nav.expanded)
 
     // Guild Data from User Identity:
-    const guildDataFromUser = computed(() => auth.identity?.state?.guilds.find(g => g.id == dashboard.guildId))
+    const guildDataFromUser = computed(() => auth.identity?.guilds.find(g => g.id == dashboard.guildId))
 
 
     // Server Pop Up Element:

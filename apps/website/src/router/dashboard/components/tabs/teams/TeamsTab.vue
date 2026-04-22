@@ -1,16 +1,32 @@
 <script lang="ts" setup>
     import { useDashboardStore } from '@/stores/dashboard';
     import TeamCard from './TeamCard.vue';
+    import TeamFormDialog, { type TeamDialogFormSchema } from './TeamFormDialog.vue';
 
+    const randomId = computed(() => crypto.randomUUID())
 
-    // services:
+    // Services:
     const dashboard = useDashboardStore()
+
+    const rolesData = computed(() => dashboard.guildData.roles)
+
+
+    // Teams Dialog
+    const teamDialogEditPayload = ref<TeamDialogFormSchema & { id: any } | undefined>(undefined)
+    const teamDialogVisible = ref(false)
 
 </script>
 
 
 <template>
     <main class="gap-2.5 flex pb-5 flex-col w-full grow">
+
+        <button @click="async () => { await rolesData.get(); console.log(rolesData.state) }"
+            :disabled="rolesData.meta.cooldown_secs_remaining() > 0" class="button-base">
+            Fetch
+        </button>
+
+        {{ rolesData.state ?? 'No Data' }}
 
         <!-- Teams Table -->
         <div
@@ -25,7 +41,8 @@
                     </h1>
                 </span>
 
-                <Button unstyled class="button-base button-success p-0.5 active:scale-95">
+                <Button @click="teamDialogVisible = true" unstyled
+                    class="button-base button-success p-0.5 active:scale-95">
                     <Icon icon="mdi:plus" class="size-5" />
                     <p class="pr-1 uppercase">
                         Create
@@ -74,10 +91,14 @@
                 </span>
 
                 <!-- Team Card -->
-                <TeamCard />
+                <TeamCard :id="randomId" @startEdit="(id, p) => { teamDialogEditPayload = { ...p, id } }" />
             </span>
 
         </div>
+
+        <!-- Team Form Dialog -->
+        <TeamFormDialog v-model:is-visible="teamDialogVisible" v-model:edit-payload="teamDialogEditPayload" />
+
     </main>
 </template>
 

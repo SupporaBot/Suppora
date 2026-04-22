@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express"
 import { log } from "../../utils/logs/logs"
 import { supabase } from "../../utils/database/supabase"
 
-/**`Middleware Util 🔑` - Verifies the provided authorization "Bearer" token provided with the API request. 
+/**`API Middleware 🔑` - Verifies the provided authorization "Bearer" token provided with the API request. 
  * @IF User token **is valid**: the user data/session will be attached to the request. */
 async function verifyToken(req: Request, res: Response, next: NextFunction) {
 

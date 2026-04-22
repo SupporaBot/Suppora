@@ -6,6 +6,7 @@ import { ApiResponse } from '@suppora/shared'
 import authRoutes from './routes/auth/auth'
 import identityRoutes from './routes/identity'
 import systemRoutes from './routes/system'
+import guildsRouter from './routes/guilds/guilds'
 
 // Express App:
 const app = Express()
@@ -25,11 +26,13 @@ app.use(cors)
 // Middleware - Rate Limiter:
 app.use(rateLimiter)
 
+const apiPrefix = '/api/v1'
 
 // API Routes:
-app.use('/api/v1/auth', authRoutes)
-app.use('/api/v1/identity', identityRoutes)
-app.use('/api/v1/system', systemRoutes)
+app.use(apiPrefix + '/auth', authRoutes)
+app.use(apiPrefix + '/identity', identityRoutes)
+app.use(apiPrefix + '/system', systemRoutes)
+app.use(apiPrefix + '/guilds', guildsRouter)
 
 
 // NOT FOUND - 404 Handler:

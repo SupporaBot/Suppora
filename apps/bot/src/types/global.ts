@@ -1,6 +1,6 @@
 import { User } from "@supabase/supabase-js";
 import { Database } from "@suppora/shared";
-import { Collection, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { Collection, Guild, GuildMember, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { HexColorNumber } from "./customBuilders";
 
 
@@ -56,9 +56,13 @@ declare module "Express"
 declare module "express-serve-static-core" {
 
     interface Request {
+
+        guild?: Guild
+
         auth?: {
             user: User,
-            profile: Database['public']['Tables']['profiles']['Row']
+            profile: Database['public']['Tables']['profiles']['Row'],
+            guildMember?: GuildMember
         }
     }
 

@@ -28,7 +28,7 @@ export class ApiResponse {
     /** Reply - Successful API Result
      * @default-status-code `200`
      * @returns- {@linkcode APIResponseValue} */
-    public success<ResData>(data: ResData, statusCode: HttpStatusCode | number = 200) {
+    public success<ResData>(data: ResData, statusCode: HttpStatusCode = HttpStatusCode.Ok) {
         return this.res.status(statusCode).json({
             success: true,
             data,
@@ -42,7 +42,7 @@ export class ApiResponse {
     /** Reply - Failed API Result
      * @default-status-code `500`
      * @returns- {@linkcode APIResponseValue} */
-    public failure<ResData>(error: ResData, statusCode: HttpStatusCode | number = 500) {
+    public failure<ResData>(error: ResData, statusCode: HttpStatusCode = HttpStatusCode.InternalServerError) {
         return this.res.status(statusCode).json(<APIResponseValue>{
             success: false,
             error,

@@ -15,7 +15,10 @@ type StateOptions<T> = {
      * @default- `false`
      * @when_false Will NOT throw/log on cooldown and just return current state
      * @when_true Will throw/log on cooldown regardless of `throwError` option, returning no state */
-    throwCooldown?: true
+    throwCooldown?: true,
+
+    /** Optional transform function to use on response data. */
+    transformData?: (data: any) => T | unknown
 }
 
 
@@ -97,7 +100,11 @@ export function asyncState<T>(
 
             // Fetch data:
             loading.value = true
-            const res = await promise()
+            let res = await promise()
+
+            if (opts?.transformData) {
+                res = await opts.transformData(res) as Awaited<T>
+            }
 
             // Update state:
             meta.count++

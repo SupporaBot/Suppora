@@ -1,9 +1,13 @@
 <script lang="ts" setup>
-    import Tooltip from '@/components/Tooltip.vue';
     import { useDashboardStore } from '@/stores/dashboard';
     import DashboardTooltip from '../../DashboardTooltip.vue';
-    import TeamEditDialog from './TeamEditDialog.vue';
+    import { type TeamDialogFormSchema } from './TeamFormDialog.vue';
+    import type { UUID } from 'crypto';
 
+    // Props:
+    const props = defineProps<{
+        id: UUID
+    }>()
 
     // Services:
     const dashboard = useDashboardStore()
@@ -12,15 +16,11 @@
     const teamTitle = ref('Example')
     const roleIssues = ref(false)
 
-    // Edit Dialog:
-    const editDialogRef = useTemplateRef('editDialogRef')
-    const editTeamDialogVisible = ref(false)
 
-    function editThisTeam() {
-        editDialogRef.value?.startEdit({
-            title: teamTitle.value
-        })
-    }
+    // Start Edit - Emit:
+    const emits = defineEmits<{
+        startEdit: [UUID, TeamDialogFormSchema]
+    }>()
 
 </script>
 
@@ -46,7 +46,8 @@
             </span>
 
 
-            <Button title="View Ticket" @click="editThisTeam" unstyled class="button-base bg-bg-4 ml-auto gap-1">
+            <Button title="View Ticket" @click="emits('startEdit', props.id, { title: teamTitle })" unstyled
+                class="button-base bg-bg-4 ml-auto gap-1">
                 <Icon icon="mdi:pencil-outline" />
                 <p class="text-xs hidden sm:block"> Edit </p>
                 <p class="text-xs hidden md:block"> Team </p>
@@ -121,7 +122,6 @@
 
     </div>
 
-    <TeamEditDialog ref="editDialogRef" v-model:is-visible="editTeamDialogVisible" />
 </template>
 
 

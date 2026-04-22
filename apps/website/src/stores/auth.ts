@@ -1,10 +1,12 @@
 import router from "@/router";
 import { API_BaseUrl, ApiRequest } from "@/utils/api";
+import { asyncState } from "@/utils/asyncState";
 import { supabase } from "@/utils/supabase";
 import type { Session, User } from "@supabase/supabase-js";
 import { type API_SelfUserIdentity } from "@suppora/shared"
 import { HttpStatusCode } from "axios";
 import { DateTime } from "luxon";
+import useNotifier from "./notifier";
 
 
 
@@ -15,7 +17,95 @@ export const useAuthStore = defineStore('auth', () => {
     const signedIn = ref<boolean>(false);
     const user = ref<User | null>(null);
     const session = ref<Session | null>(null);
-    // const identity = ref<API_SelfUserIdentity & { _next_fetch_allowed_at: DateTime } | null>(null);
+
+    // Identity:
+    const identity = ref<API_SelfUserIdentity | undefined>(undefined)
+    async function getSelfIdentity(forceAPI?: boolean) {
+
+        // Mark Auth Unready:
+        authReady.value = false
+        // Method Vars:
+        const notifier = useNotifier()
+        const identityFetchCooldownSecs = 120
+        try {
+            // Confirm Session:
+            if (!session.value) throw new Error(`[Self Identity Error]: Cannot fetch identity without valid session!`, { cause: session })
+            // Check for Cooldown:
+            const lastGet = identity.value?._fetched_at
+                ? DateTime.fromISO(identity.value._fetched_at)
+                : undefined
+            if (lastGet?.isValid) {
+                const secsElapsed = (DateTime.utc().diff(lastGet, 'seconds')?.seconds ?? 0)
+                if (secsElapsed < identityFetchCooldownSecs) {
+                    const secsRemaining = Math.max(0, Math.ceil(identityFetchCooldownSecs - secsElapsed))
+                    // Return Cooldown Result:
+                    authReady.value = true
+                    return {
+                        success: false,
+                        ctx: {
+                            issue: 'COOLDOWN - Recently Fetched',
+                            secondsRemaining: secsRemaining
+                        }
+                    } as const
+                }
+            }
+            // Fetch Fresh Identity:
+            const reqPath = `/identity/users/@me${forceAPI ? '?force=true' : ''}`;
+            const { success, status, data, error } = await ApiRequest<API_SelfUserIdentity>({ url: reqPath });
+            if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
+                console.warn(`[↗️ Self Identity]: Failed - Must Re-Authenticate!`)
+                signIn(useRoute().fullPath)
+                // Return Forbidden Result:
+                authReady.value = true
+                return {
+                    success: false,
+                    ctx: {
+                        issue: 'API - Unauthorized/Forbidden',
+                        status,
+                        error
+                    }
+                } as const
+
+            }
+            if (!success || error) throw new Error(`[Self Identity Error]: Identity API response returned unsuccessful!`, { cause: error, })
+
+            // Set Fresh Identity:
+            identity.value = data
+
+
+
+            // Return Success:
+            console.info('[👤 Self Identity]: FETCHED', { data })
+            authReady.value = true
+            return {
+                success: true,
+                ctx: {
+                    identity: identity.value
+                }
+            } as const
+        } catch (err) {
+            // Log & Return Error:
+            console.error('[Identity Fetch]: ERROR', err)
+            if (import.meta.env.PROD) signOut()
+            notifier.send({
+                level: 'error',
+                header: 'Identity Failure',
+                content: h('span', { class: 'text-xs p-1' }, `We were unable to fetch your account identity and had to sign you out of your account! Try signing back in, if the issue continues please contact Support!`),
+                duration: false,
+                icon: 'mingcute:user-x-fill'
+            })
+            return {
+                success: false,
+                ctx: {
+                    issue: 'CAUGHT ERROR',
+                    error: err
+                }
+            } as const
+        }
+
+    }
+
+
 
     // Util - Waits for Auth to be ready */
     async function waitForAuthReady(timeoutMs = 10_000) {
@@ -70,51 +160,50 @@ export const useAuthStore = defineStore('auth', () => {
         location.assign('/')
     }
 
-    const identity = (() => useAsyncState(
-        fetchSelfIdentity,
-        undefined,
-        {
-            immediate: false
-        }
-    ))()
-
+    // const identity = (() => useAsyncState(
+    //     fetchSelfIdentity,
+    //     undefined,
+    //     {
+    //         immediate: false
+    //     }
+    // ))()
 
 
     // Method - Fetch Self Identity:
     const selfIdentityFetchMinCooldownMins = 2.5
-    async function fetchSelfIdentity(forceApi?: boolean) {
-        // Confirm Session:
-        if (!session.value) return Promise.reject(`(!) Cannot fetch identity w/o a valid session!`)
-        // Check Cooldown:
-        const prevLastFetchedAt = DateTime.fromISO(String(identity.state.value?._fetched_at), { zone: 'utc' })
-        const nextFetchAllowedAt = prevLastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
-        if (nextFetchAllowedAt > DateTime.utc()) {
-            console.warn(`[Self Identity]: COOLDOWN - Too many requests! You need to wait at least ${nextFetchAllowedAt?.diffNow('second')?.seconds ?? '?'} seconds before you fetch your identity again!`)
-            return Promise.reject('COOLDOWN')
-        }
+    // async function fetchSelfIdentity(forceApi?: boolean) {
+    //     // Confirm Session:
+    //     if (!session.value) return Promise.reject(`(!) Cannot fetch identity w/o a valid session!`)
+    //     // Check Cooldown:
+    //     const prevLastFetchedAt = DateTime.fromISO(String(identity.state.value?._fetched_at), { zone: 'utc' })
+    //     const nextFetchAllowedAt = prevLastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
+    //     if (nextFetchAllowedAt > DateTime.utc()) {
+    //         console.warn(`[Self Identity]: COOLDOWN - Too many requests! You need to wait at least ${nextFetchAllowedAt?.diffNow('second')?.seconds ?? '?'} seconds before you fetch your identity again!`)
+    //         return Promise.reject('COOLDOWN')
+    //     }
 
 
-        // Make API Request:
-        const apiPath = forceApi ? '/identity/users/@me?force=true' : '/identity/users/@me';
-        const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: apiPath })
-        // If Redirection - (Re-Authenticate)
-        if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
-            const location = response?.headers?.['Location']
-            console.warn(`[↗️ Self Identity]: Failed - Must Re-Authenticate - REDIRECTION!`, { redirect: location })
-            if (location) location.assign(location)
-        }
-        if (error || !data) {
-            console.warn('[❌ Self Identity]: API FAIL', { data, error })
-        } else {
-            console.info('[👤 Self Identity]: FETCHED', { data })
-            const lastFetchedAt = DateTime.fromISO(String(data?._fetched_at), { zone: 'utc' })
-            const r = {
-                ...data,
-                _next_fetch_allowed_at: lastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
-            }
-            return r
-        }
-    }
+    //     // Make API Request:
+    //     const apiPath = forceApi ? '/identity/users/@me?force=true' : '/identity/users/@me';
+    //     const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: apiPath })
+    //     // If Redirection - (Re-Authenticate)
+    //     if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
+    //         const location = response?.headers?.['Location']
+    //         console.warn(`[↗️ Self Identity]: Failed - Must Re-Authenticate - REDIRECTION!`, { redirect: location })
+    //         if (location) location.assign(location)
+    //     }
+    //     if (error || !data) {
+    //         console.warn('[❌ Self Identity]: API FAIL', { data, error })
+    //     } else {
+    //         console.info('[👤 Self Identity]: FETCHED', { data })
+    //         const lastFetchedAt = DateTime.fromISO(String(data?._fetched_at), { zone: 'utc' })
+    //         const r = {
+    //             ...data,
+    //             _next_fetch_allowed_at: lastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
+    //         }
+    //         return r
+    //     }
+    // }
 
     // Util - Reset Store
     function reset() {
@@ -123,7 +212,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = null;
         session.value = null;
         // Self Identity
-        identity.state = undefined as any;
+        identity.value = undefined as any;
     };
 
 
@@ -137,8 +226,11 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         /**The currently signed in auth {@linkcode Session This} *(if any)**/
         session,
-        /**The currently signed in auth `identify` *(if any)**/
+        /**The currently signed in auth `identity` *(if any)**/
         identity,
+        /****`Method`** - Used for users to refresh their account {@linkcode identity}.
+         * @note This adjusts {@linkcode authReady} as its fetching & completed! */
+        getSelfIdentity,
         /** Class/Utils - For Redirection after successful auth {@linkcode signIn()} */
         useRedirectAfterAuth,
         /****`Method`/`Redirect`** - Used for users to sign into their accounts. */
@@ -169,7 +261,7 @@ export const initializeAuthStateWatcher = () => {
         // For Specific Event Type:
         if (event == 'INITIAL_SESSION') {
             // Mark auth store as ready - Fetch Self Identity:
-            if (session) await s.identity?.execute()
+            if (session) await s.getSelfIdentity() // await s.identity?.execute()
             s.authReady = true;
             // Check for Redirect after Auth:
             const redirectTo = s?.useRedirectAfterAuth.get()
@@ -180,7 +272,8 @@ export const initializeAuthStateWatcher = () => {
 
         } else if (event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') {
             // Refetch SELF Identity - Update Store:
-            if (session) await s.identity?.execute()
+            if (session) await s.getSelfIdentity()
+
 
         } else if (event == 'SIGNED_OUT' || !s || !s.user) {
             // User Signed Out - Clear/Reset Auth Store:

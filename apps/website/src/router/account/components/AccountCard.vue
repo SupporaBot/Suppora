@@ -1,30 +1,52 @@
 <script lang="ts" setup>
     import Tooltip from '@/components/Tooltip.vue';
     import { useAuthStore } from '@/stores/auth';
+    import useNotifier from '@/stores/notifier';
     import { DateTime } from 'luxon';
 
-
     // Services:
+    const notifier = useNotifier()
     const auth = useAuthStore()
+
+    // User / Identity
     const user = computed(() => auth.user)
-    const identity = computed(() => auth.identity.state)
-
-
-    const now = ref(DateTime.utc())
-
-    const nextIdentityFetchAllowedAt = computed(() => identity.value?._next_fetch_allowed_at)
-    const isNextRefreshCooldown = computed(() => ((nextIdentityFetchAllowedAt.value ?? now.value) > now.value))
+    const identity = computed(() => auth.identity)
 
     // Avatar Icon Load State:
     const avatarLoaded = ref(false)
 
-    onMounted(() => {
-        const interval = setInterval(() => {
-            now.value = DateTime.utc()
-        }, 1000) // update every second
+    // Identity Refresh - Method:
+    const refreshState = ref<SubmitStatus>('idle')
+    async function refreshIdentity() {
+        refreshState.value = 'idle'
+        try {
+            refreshState.value = 'loading'
+            const result = await auth.getSelfIdentity(true)
+            console.log({ result })
+            if (result.success) {
+                refreshState.value = 'success'
+                notifier.send({
+                    level: 'success',
+                    header: 'Data In Sync!',
+                    content: h('span', { class: 'p-1' }, ['Your Discord account data has been refreshed!']),
+                })
+            }
+            else {
+                refreshState.value = 'failed'
+                if (result.ctx.secondsRemaining) {
+                    // Cooldown:
+                    notifier.send({
+                        level: 'warn',
+                        header: 'Slow Down!',
+                        content: `<span class="text-xs flex flex-col">It seems you've recently refreshed your account identity, please wait a short while. <br><span class="opacity-60 pt-2">Cooldown Remaining: ${result.ctx.secondsRemaining ?? '?'} seconds</span> </span>`
+                    })
+                }
+            }
+        } finally {
+            setTimeout(() => refreshState.value = 'idle', 3_000)
+        }
 
-        onUnmounted(() => clearInterval(interval))
-    })
+    }
 
 </script>
 
@@ -137,16 +159,22 @@
 
         <!-- Actions -->
         <div class="flex-center max-sm:flex-col w-full p-3 gap-4.5 mb-2.25">
+            <!-- Sign Out -->
             <Button unstyled @click="auth.signOut()" title="Sign Out"
                 class="ring-danger-3 gap-0.75 hover:!ring-danger-2 button-outline bg-bg-3! active:scale-95">
                 <Icon icon="line-md:logout" class="size-5.5 py-px" />
                 Sign Out
             </Button>
 
-            <Button unstyled @click="auth.identity.execute(0, true)" :disabled="isNextRefreshCooldown"
-                title="Resync Discord Data"
-                class=" gap-0.75 hover:!ring-brand-2 disabled:cursor-not-allowed disabled:!ring-ring-2 disabled:scale-100! button-outline bg-bg-3! active:scale-95">
-                <Icon icon="ic:baseline-discord" class="size-4.5 py-px opacity-60" />
+            <!-- Refresh Identity -->
+            <Button unstyled @click="refreshIdentity" :disabled="refreshState != 'idle'" title="Resync Discord Data"
+                class=" gap-0.75 hover:ring-brand-4 disabled:cursor-not-allowed disabled:scale-100! button-outline bg-bg-3! active:scale-95"
+                :class="{
+                    'disabled:ring-success-2!': refreshState == 'success',
+                    'disabled:ring-danger-2!': refreshState == 'failed'
+                }">
+                <Icon v-if="refreshState != 'loading'" icon="ic:baseline-discord" class="size-4.5 py-px opacity-60" />
+                <Icon v-else icon="line-md:loading-twotone-loop" class="size-4.5 py-px opacity-85" />
                 <p class="text-xs opacity-70"> Resync Data </p>
             </Button>
 

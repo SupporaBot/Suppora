@@ -43,12 +43,13 @@
     <!-- Href/Button Links -->
     <a v-if="props.href || (!props.to && props.action)" :href="props.href" target="_blank" class="w-full flex">
         <button @click="handleClick" :title="props.title"
-            class="button-base flex grow justify-start items-center gap-0.5!">
+            class="button-base relative flex grow justify-start items-center gap-0.5!">
             <Icon v-if="props.icon" class="size-5.25 opacity-80" :icon="props.icon" />
             <p class="font-medium py-px">
                 {{ props.title }}
             </p>
-            <Icon v-if="props.href" class="size-3 opacity-80 ml-auto my-auto" icon="gridicons:external" />
+            <Icon v-if="props.href" class="size-3 absolute right-1 opacity-80 ml-auto my-auto"
+                icon="gridicons:external" />
         </button>
     </a>
 </template>

@@ -111,7 +111,7 @@
 
                     <!-- Close Button -->
                     <Button v-if="data?.close_button !== false" unstyled @click="notifier.hide(msgId)"
-                        class="button-dynamic ml-auto my-auto aspect-square p-0.75 group/cb">
+                        class="button-dynamic ml-auto mt-0.75 mb-auto aspect-square p-0.75 group/cb">
                         <Icon icon="mdi:close" class="size-4 p-px text-text-1/50 group-hover/cb:text-text-1/70!" />
                     </Button>
 
@@ -133,14 +133,14 @@
                     <Button v-for="{ button, onClick } in data.actions" :key="`action-btn-${button?.title}`" @click="(e) => {
                         let ctx = { close: () => notifier.hide(msgId) };
                         if (onClick) onClick(e, ctx)
-                    }" :class="button.class" unstyled class="button-base bg-bg-3 text-xs!">
+                    }" :class="button.class" unstyled class="button-base bg-bg-3 relative! text-xs!">
                         <Icon v-if="button.icon" :icon="button.icon" class="size-4.5" />
                         <p>
                             {{ button.title }}
                         </p>
 
                         <!-- If native link href provided -->
-                        <a v-if="button?.href && !button.href.startsWith('/')"
+                        <a v-if="button?.href && !button.href.startsWith('/')" class="absolute inset-0 w-full h-full"
                             :href="button.href.startsWith('+') ? button.href.replace('+', '') : button.href"
                             :target="button.href.startsWith('+') ? '_blank' : undefined" />
 

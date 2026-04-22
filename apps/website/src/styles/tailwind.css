@@ -73,7 +73,7 @@
 @utility button-base {
     @apply flex-center bg-bg-2 px-1.75 py-0.75 rounded-md ring-2 ring-ring-2 font-medium text-sm cursor-pointer transition-all;
     @apply hover:ring-ring-1;
-    @apply disabled:cursor-not-allowed disabled:opacity-60 disabled:!ring-ring-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-60 disabled:!ring-ring-2 disabled:scale-100!;
     @apply active:scale-95;
 
     &.button-info {
