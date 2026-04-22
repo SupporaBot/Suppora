@@ -1,4 +1,7 @@
 
+// Exported Type - Dashboard Tabs
+export type DashboardTab = 'Tickets' | 'Panels' | 'Teams' | 'Settings'
+
 export const useDashboardStore = defineStore('dashboard', () => {
 
     // Selected Guild:
@@ -12,8 +15,9 @@ export const useDashboardStore = defineStore('dashboard', () => {
     // Dashboard Nav:
     const nav = (() => ({
         expanded: ref(false),
-        toggle: () => nav.expanded.value = !nav.expanded.value,
-        currentTab: ref<'Tickets' | 'Panels' | 'Teams' | 'Settings'>('Tickets')
+        toggleExpanded: () => nav.expanded.value = !nav.expanded.value,
+        currentTab: ref<DashboardTab>('Tickets'),
+        changeTab: (t: DashboardTab) => nav.currentTab.value = t
     }))()
 
     // Return States & Methods:
@@ -21,6 +25,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
         guildId,
         guildData,
 
-        nav
+        nav,
     }
 })

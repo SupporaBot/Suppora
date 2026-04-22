@@ -34,7 +34,7 @@
                 <p v-if="navExpanded" class="text-xs text-text-2 uppercase font-extrabold grow text-nowrap">
                     Bot Dashboard
                 </p>
-                <button @click="dashboard.nav.toggle()" :title="navExpanded ? 'Collapse Nav' : 'Expand Nav'"
+                <button @click="dashboard.nav.toggleExpanded()" :title="navExpanded ? 'Collapse Nav' : 'Expand Nav'"
                     class="cursor-pointer flex-center rounded-md m-1 hover:bg-text-1/10 group/btn aspect-square p-1!">
                     <Icon icon="icon-park-outline:expand-left" :class="{ 'rotate-y-180! mx-auto!': navExpanded }"
                         class="size-5.5 opacity-50 aspect-square transition-all group-hover/btn:opacity-70!" />

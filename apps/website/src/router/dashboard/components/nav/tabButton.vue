@@ -24,13 +24,15 @@
 
 <template>
     <button :title="p.title" @click="selectTab(p.tab)"
-        class="p-1! button-outline! flex-nowrap! bg-bg-3! w-full! h-fit! relative overflow-clip"
+        class="p-1! button-outline! flex-nowrap! bg-bg-3! w-full! h-fit! relative overflow-clip active:scale-100!"
         :class="{ 'rounded-none! border-x-0!': !navExpanded }">
         <Icon :icon="p.icon" class="size-5! opacity-55 aspect-square!" />
         <p class="mr-auto ml-1" v-if="navExpanded"> {{ p.title }} </p>
 
-        <span :class="{ 'w-0.75': currentTab == p.tab }"
-            class="absolute right-0 h-[98%] my-auto w-0 bg-brand-2 transition-all rounded-full" />
+        <span :class="{
+            'w-0.75': currentTab == p.tab,
+            'w-1!': currentTab == p.tab && navExpanded
+        }" class="absolute right-0 h-[98%] my-auto w-0 bg-brand-2 transition-all rounded-md" />
     </button>
 </template>
 

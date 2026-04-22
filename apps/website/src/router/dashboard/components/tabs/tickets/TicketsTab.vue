@@ -70,7 +70,8 @@
 
 
         <!-- Tickets Table -->
-        <div class="w-full rounded-lg overflow-clip mx-auto grid grid-cols-1 bg-bg-2 outline-2 outline-ring-3">
+        <div
+            class="w-full max-w-7xl rounded-lg overflow-clip mx-auto grid grid-cols-1 bg-bg-2 outline-2 outline-ring-3">
 
             <!-- Table Header -->
             <div class="w-full bg-bg-2 flex-center justify-between p-2 border-b-2 border-ring-3">
@@ -103,8 +104,8 @@
 
 
                     <!-- Tip - Create Panel(s) -->
-                    <div hidden>
-                        <div class="w-27 h-0.75 bg-bg-3 rounded-full my-2 mt-1.5" />
+                    <div>
+                        <div class="w-27 h-0.75 bg-bg-3 rounded-full my-2 mx-auto mt-1.5" />
 
 
                         <span class="text-sm text-text-3">
@@ -117,14 +118,17 @@
                     </div>
 
                     <p class="text-sm text-text-3">
-                        <b>TIP:</b> You can create one or wait for one of your server members to open one themselves.
+                        <b class="text-brand-2 font-semibold">TIP:</b> You can create a <b class="text-code">Ticket</b>
+                        or wait for one of your server
+                        members to open
+                        one themselves.
                     </p>
 
                 </div>
 
                 <!-- Subheading - Ticket Count -->
                 <span class="text-text-3 text-sm w-full">
-                    Tickets: <b class="font-semibold">1</b>
+                    Total Tickets: <b class="font-semibold">1</b>
                 </span>
 
                 <!-- Ticket Card -->

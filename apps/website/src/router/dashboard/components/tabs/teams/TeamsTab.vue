@@ -11,19 +11,17 @@
 
 <template>
     <main class="gap-2.5 flex pb-5 flex-col w-full grow">
-        <div>
-            TEAMS - Content Here
-        </div>
 
-
-        <div class="w-full rounded-lg overflow-clip mx-auto grid grid-cols-1 bg-bg-2 outline-2 outline-ring-3">
+        <!-- Teams Table -->
+        <div
+            class="w-full max-w-7xl rounded-lg overflow-clip mx-auto grid grid-cols-1 bg-bg-2 outline-2 outline-ring-3">
 
             <!-- Table Header -->
             <div class="w-full bg-bg-2 flex-center justify-between p-2 border-b-2 border-ring-3">
                 <span class="flex-center w-fit gap-1 flex-row opacity-70">
-                    <Icon icon="mingcute:paper-2-fill" class="size-5.5 " />
+                    <Icon icon="ic:baseline-people" class="size-5.5 " />
                     <h1 class="text-lg font-semibold">
-                        Tickets
+                        Teams
                     </h1>
                 </span>
 
@@ -50,7 +48,7 @@
 
                     <!-- Tip(s) - Creating Teams(s) -->
                     <div hidden>
-                        <div class="w-27 h-0.75 bg-bg-3 rounded-full my-2 mt-1.5" />
+                        <div class="w-27 h-0.75 bg-bg-3 rounded-full mx-auto my-2 mt-1.5" />
 
                         <span class="text-sm text-text-3">
                             <b class="text-brand-2 font-semibold">TIP:</b>
@@ -72,7 +70,7 @@
 
                 <!-- Subheading - Ticket Count -->
                 <span class="text-text-3 text-sm w-full">
-                    Teams: <b class="font-semibold">1</b>
+                    Total Teams: <b class="font-semibold">1</b>
                 </span>
 
                 <!-- Team Card -->

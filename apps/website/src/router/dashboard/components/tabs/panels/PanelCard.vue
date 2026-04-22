@@ -2,7 +2,7 @@
     import Tooltip from '@/components/Tooltip.vue';
     import { useDashboardStore } from '@/stores/dashboard';
     import DashboardTooltip from '../../DashboardTooltip.vue';
-    import TeamEditDialog from './TeamEditDialog.vue';
+    // import TeamEditDialog from './TeamEditDialog.vue';
 
 
     // Services:
@@ -121,7 +121,7 @@
 
     </div>
 
-    <TeamEditDialog ref="editDialogRef" v-model:is-visible="editTeamDialogVisible" />
+    <!-- <TeamEditDialog ref="editDialogRef" v-model:is-visible="editTeamDialogVisible" /> -->
 </template>
 
 
