@@ -1,4 +1,4 @@
-import { Database as DB } from "./supabase";
+import type { Database as DB } from "./supabase";
 
 export type Database = DB
 export type DatabaseTable = keyof Database['public']['Tables']
