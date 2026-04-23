@@ -22,6 +22,7 @@ guildsRouter.get(`/:guildId/roles`, verifyToken, verifyGuildMembership(true), as
         const rolesMap = (guild.roles.cache ?? await guild.roles.fetch())?.values()
         if (!rolesMap) throw new Error('Failed to fetch guild roles - no rolesMap', { cause: { rolesMap } })
         const result = [...rolesMap]?.map(r => ({
+            id: r.id,
             name: r.name,
             color: (r.color || r.colors),
             permissions: String(r.permissions.bitfield),
@@ -49,6 +50,7 @@ guildsRouter.get(`/:guildId/channels`, verifyToken, verifyGuildMembership(true),
         const channelsMap = (guild.channels.cache ?? await guild.channels.fetch())?.values()
         if (!channelsMap) throw new Error('Failed to fetch guild channels - no channelMap', { cause: { channelsMap } })
         const result = [...channelsMap]?.map(c => ({
+            id: c.id,
             name: c.name,
             type: c.type,
             manageable: c.manageable,
