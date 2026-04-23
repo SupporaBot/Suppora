@@ -5,7 +5,7 @@ import { ApiResponse, TeamSchema } from '@suppora/shared'
 import { HttpStatusCode } from 'axios'
 import { supabase } from '../../../utils/database/supabase'
 import { verifyGuildMembership } from '../../middleware/verifyGuildMember'
-import { DiscordAPIError } from 'discord.js'
+import { DiscordAPIError, Guild } from 'discord.js'
 
 const teamsRouter = express.Router({ mergeParams: true })
 
@@ -42,7 +42,6 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
         ])
 
 
-
         // Create New Team for Guild:
         const { data: newTeam, error: newTeamErr } = await supabase.from('teams').insert({
             guild_id: guildId,
@@ -68,7 +67,6 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
 
 // EDIT / PATCH - Existing Team:
 // URL: https://api.suppora.app/guilds/:guildId/teams/:teamId
-// ! Fixes Needed: Fallbacks when guild/roles unavailable
 teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (req, res) => {
     const guildId = req.params?.['guildId'] as string
     const teamId = req.params?.['teamId'] as string
@@ -95,37 +93,44 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
         if (existingTeamErr || !existingTeam) throw new Error('Failed to fetch existing team for update from database!', { cause: existingTeamErr })
 
         // Update Server Roles:
-        const [onCallRole, offCallRole] = await Promise.allSettled([
-            guild.roles.edit(existingTeam.role_id_on_call, {
-                name: `${data.title} - On Call`,
+        async function updateRole(id: string, type: 'On' | 'Off') {
+            try {
+                // Edit Existing Role:
+                const updated = await guild.roles.edit(id, {
+                    name: `${data.title} - ${type} Call`,
 
-            }),
-            guild.roles.edit(existingTeam.role_id_off_call, {
-                name: `${data.title} - Off Call`,
-            })
+                })
+                return updated
+            } catch (editErr) {
+                // Edit Role Failed:
+                if (editErr instanceof DiscordAPIError) {
+                    if (editErr.code == 10011 || editErr.code == 10007) {
+                        // Role Deleted/Missing:
+                        const newRole = await guild.roles.create({
+                            name: `${data.title} - ${type} Call`,
+                            color: 0x717ff0
+                        })
+                        return newRole
+                    } else if (editErr.code == 50013 || editErr.code == 50001) {
+                        // Cannot Edit due to HIERARCHY/Permissions:
+                        throw new Error(`[Edit Team Role]: Cannot edit team role(id: ${id}) due to ROLE HIERARCHY/PERMISSIONS!`, { cause: editErr })
+                    }
+                }
+                throw editErr
+            }
+        }
+        const [onCallRole, offCallRole] = await Promise.all([
+            updateRole(existingTeam.role_id_on_call, 'On'),
+            updateRole(existingTeam.role_id_off_call, 'Off')
         ])
-        if (onCallRole.status == 'rejected') {
-            // Complete Me
-            const err = onCallRole.reason
-            if (err instanceof DiscordAPIError && err.code == '?') {
-
-            }
-            throw onCallRole
-        }
-        if (offCallRole.status == 'rejected') {
-            // Complete Me
-            const err = offCallRole.reason
-            if (err instanceof DiscordAPIError && err.code == '?') {
-
-            }
-            throw offCallRole
-        }
 
         // Update Database Team:
         const { data: updatedTeam, error: updatedTeamErr } = await supabase.from('teams').update({
             guild_id: guildId,
             id: teamId,
-            title: data.title
+            title: data.title,
+            role_id_on_call: onCallRole.id,
+            role_id_off_call: offCallRole.id
         }).eq('id', teamId).select().single()
         if (!updatedTeam || updatedTeamErr) throw new Error('Failed to update existing team within database!', { cause: updatedTeamErr })
 
@@ -163,25 +168,24 @@ teamsRouter.delete('/:teamId', verifyToken, verifyGuildMembership(true), async (
         if (deleteDbErr) throw new Error('Failed to delete existing team from database!', { cause: deleteDbErr })
 
         // Delete Team Roles:
-        const deleteResults = await Promise.all([data.role_id_on_call, data.role_id_off_call]?.map(id => new Promise<boolean>(async (res, rej) => {
+        async function safeDeleteRole(guild: Guild, id: string) {
             try {
                 await guild.roles.delete(id)
-                return res(true)
+                return true
             } catch (err) {
                 if (err instanceof DiscordAPIError) {
-                    if ((err.code == 10011 || err.code == 50028)) {
-                        // Invalid/Missing Role - (Already Deleted?):
-                        return res(true)
-                    } else if (err.code == 50001 || err.code == 50013) {
-                        // Missing Permissions
-                        return rej({ message: '[Delete Role - MISSING PERMISSION]: Failed to delete a role due to missing bot permissions/access!', err },)
+                    if (err.code === 10011 || err.code === 50028) return true
+                    if (err.code === 50001 || err.code === 50013) {
+                        throw new Error('[PERMISSIONS]: Cannot delete role', { cause: err })
                     }
                 }
-                return rej({ message: '[Delete Role - Internal Error]: Failed to delete a role due to unknown error!', err })
+                throw err
             }
-        })))
-        const deleteIssue = deleteResults.some(b => b != true)
-        if (deleteIssue) throw new Error('Failed to delete team server roles for api delete request!', { cause: deleteResults })
+        }
+        await Promise.all([
+            safeDeleteRole(guild, data.role_id_on_call),
+            safeDeleteRole(guild, data.role_id_off_call)
+        ])
 
         // Return Success:
         return new ApiResponse(res).success({
