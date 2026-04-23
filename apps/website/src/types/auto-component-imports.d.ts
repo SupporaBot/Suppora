@@ -15,6 +15,7 @@ declare module 'vue' {
     AppHeader: typeof import('./../components/AppHeader.vue')['default']
     AppNavigation: typeof import('./../components/nav/AppNavigation.vue')['default']
     Button: typeof import('primevue/button')['default']
+    ConfirmDialog: typeof import('./../components/confirm/ConfirmDialog.vue')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     Dialog: typeof import('primevue/dialog')['default']
     Form: typeof import('@primevue/forms/form')['default']

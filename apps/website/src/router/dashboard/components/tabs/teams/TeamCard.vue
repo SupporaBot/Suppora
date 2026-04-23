@@ -1,25 +1,25 @@
 <script lang="ts" setup>
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import DashboardTooltip from '../../DashboardTooltip.vue';
     import { type TeamDialogFormSchema } from './TeamFormDialog.vue';
-    import type { UUID } from 'crypto';
+    import type { DatabaseRow } from '@suppora/shared';
 
     // Props:
     const props = defineProps<{
-        id: UUID
+        team: DatabaseRow<'teams'>
     }>()
 
     // Services:
     const dashboard = useDashboardStore()
 
     // Vars:
-    const teamTitle = ref('Example')
+    const t = computed(() => props.team)
     const roleIssues = ref(false)
 
 
     // Start Edit - Emit:
     const emits = defineEmits<{
-        startEdit: [UUID, TeamDialogFormSchema]
+        startEdit: [string, TeamDialogFormSchema]
     }>()
 
 </script>
@@ -36,7 +36,7 @@
                     <Icon icon="iconamoon:star-duotone" class="size-4.75" />
                 </span>
                 <p class="text-text-2 font-semibold text-lg">
-                    {{ teamTitle ?? '?' }}
+                    {{ t?.title ?? '?' }}
                 </p>
 
             </div>
@@ -46,7 +46,7 @@
             </span>
 
 
-            <Button title="View Ticket" @click="emits('startEdit', props.id, { title: teamTitle })" unstyled
+            <Button title="View Ticket" @click="emits('startEdit', props.team.id, { title: t?.title })" unstyled
                 class="button-base bg-bg-4 ml-auto gap-1">
                 <Icon icon="mdi:pencil-outline" />
                 <p class="text-xs hidden sm:block"> Edit </p>

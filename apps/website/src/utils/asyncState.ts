@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { ApiRequest } from "./api";
 
-type StateOptions<T> = {
+export type AsyncStateOptions<T = unknown> = {
     /** The default/initial value of state before `get()` is called 
      * @type- {@linkcode T} 
      * @default- `undefined` */
@@ -11,7 +11,7 @@ type StateOptions<T> = {
     throwError?: true
     /** The minimum amount of seconds to wait in between each call to `get()`  */
     cooldown?: number
-    /** Weather or not to throw an error if `get()` was called during cooldown 
+    /** Weather or not to `console.warn()` if `get()` was called during cooldown 
      * @default- `false`
      * @when_false Will NOT throw/log on cooldown and just return current state
      * @when_true Will throw/log on cooldown regardless of `throwError` option, returning no state */
@@ -51,15 +51,16 @@ class CooldownError extends Error {
     }
 }
 
-export function asyncState<T>(
+
+export function asyncState<T = unknown>(
     /** The promise to manage state for */
-    promise: () => Promise<T>,  //  () => Promise<T>,
+    promise: () => Promise<any>,
     /** Optional method/state config */
-    opts?: StateOptions<T>
+    opts?: AsyncStateOptions<T>
 ) {
 
     // State - Refed value:
-    const state = ref(opts?.defaultValue)
+    const state = ref<T | undefined>(opts?.defaultValue)
 
     // State - Is loading/fetching:
     const loading = ref(false)
@@ -81,25 +82,30 @@ export function asyncState<T>(
     })
 
     // Method - Fetch fresh value/state:
-    const get = async () => {
+    type GetOptions = {
+        overrideCooldown?: boolean,
+        silenceLoading?: boolean
+    }
+    const get = async (getOpts?: GetOptions) => {
         try {
 
             // Check Cooldown:
-            if (opts?.cooldown) {
+            if (opts?.cooldown && !getOpts?.overrideCooldown) {
                 const lastGet = meta.last_fetched_at
                 if (lastGet) {
                     const secsFromLastGet = DateTime.utc().diff(lastGet, 'second')?.seconds
                     if (secsFromLastGet < opts.cooldown) {
                         // Called during cooldown:
                         if (opts?.throwCooldown)
-                            throw new CooldownError(lastGet, opts.cooldown)
-                        else return // "no throw" - cooldown
+                            //     throw new CooldownError(lastGet, opts.cooldown)
+                            // else 
+                            return console.warn(`[AsyncState][COOLDOWN]: You tried to re-fetch this state too quickly — State has NOT changed!`, { secsFromLastGet, remainingSecs: meta.cooldown_secs_remaining(), state: state.value })
                     }
                 }
             }
 
             // Fetch data:
-            loading.value = true
+            if (!getOpts?.silenceLoading) loading.value = true
             let res = await promise()
 
             if (opts?.transformData) {
@@ -152,11 +158,7 @@ export function asyncState<T>(
         /** `Boolean` representing weather this state is ready / has data in state. */
         ready,
         /** {@linkcode meta} object representing various aspects of the fetch state */
-        meta
+        meta,
     }
 
 }
-
-
-export type asyncState_Options<T> = StateOptions<T>
-export type asyncState_Error = CooldownError

@@ -1,15 +1,17 @@
 <script lang="ts" setup>
     import { zodResolver } from '@primevue/forms/resolvers/zod'
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import { TeamSchema } from '@suppora/shared';
     import * as z from 'zod'
     import type { FormInstance, FormSubmitEvent } from '@primevue/forms/form';
     import useNotifier from '@/stores/notifier';
     import { ApiRequest } from '@/utils/api';
+    import { useConfirm } from 'primevue';
 
     // Services:
     const dashboard = useDashboardStore()
     const notifier = useNotifier()
+    const confirm = useConfirm()
 
     // Modal Visibility:
     const isVisible = defineModel<boolean>('isVisible')
@@ -49,10 +51,41 @@
         formRef.value?.reset()
         editingTeamId.value = undefined
         formMode.value = 'new'
+        submitState.value = 'idle'
+    }
+
+    function promptDelete() {
+        confirm.require({
+            header: 'Header',
+            message: `<span class="w-full flex-col gap-1"><span>You're about to <b>permanently delete</b> this <b class="text-code">Team</b>!</span> <br> <span class="text-danger-2 text-sm w-full block mt-4"><b class="text-code font-bold!">NOTE:</b> This action <u>cannot be undone!</u></span></span>`,
+            async accept() {
+                console.info('starting delete...', editingTeamId.value)
+                submitState.value = 'deleting'
+                try {
+                    const { success, data, error } = await ApiRequest({ url: `/guilds/${dashboard.guildId}/teams/${editingTeamId.value}`, method: 'DELETE' })
+                    if (!success) {
+                        console.error('FAILED TEAM DELETION', data, error)
+                        notifier.send({
+                            level: 'error',
+                            header: 'Failed to Delete!',
+                            content: 'Unfortunately, we ran into an error while trying to delete your <b class="text-code">Team</b>!'
+                        })
+                    } else {
+                        reset()
+                        isVisible.value = false
+                        dashboard.guildData.teams.get({ overrideCooldown: true, silenceLoading: true })
+                    }
+                } finally {
+                    setTimeout(() => {
+                        submitState.value = 'idle'
+                    }, 3000);
+                }
+            },
+        })
     }
 
     // Form Submission:
-    const submitState = ref<SubmitStatus>('idle')
+    const submitState = ref<(SubmitStatus | 'deleting')>('idle')
     async function formSubmit(e: FormSubmitEvent<TeamDialogFormSchema> | FormSubmitEvent) {
         try {
             submitState.value = 'loading'
@@ -106,6 +139,7 @@
                 })
             }
         } finally {
+            await dashboard.guildData.teams.get({ overrideCooldown: true, silenceLoading: true })
             setTimeout(() => {
                 submitState.value = 'idle'
             }, 2_000);
@@ -159,9 +193,12 @@
                     </div>
 
                     <footer class="w-full flex-center gap-4 p-4 pt-2">
-                        <Button v-if="formMode == 'edit'" unstyled title="Remove"
+                        <Button @click="promptDelete" :disabled="submitState != 'idle'" v-if="formMode == 'edit'"
+                            unstyled title="Remove"
                             class="button-base bg-bg-2 gap-0.75 text-text-2 hover:text-danger-2 max-sm:aspect-square">
-                            <Icon icon="mage:trash-fill" class="size-3.75" />
+                            <Icon v-if="submitState == 'deleting'" icon="svg-spinners:90-ring-with-bg"
+                                class="relative top-px" />
+                            <Icon v-else icon="mage:trash-fill" class="size-3.75" />
                             <p class="semibold sm:flex hidden"> Remove </p>
                         </Button>
 

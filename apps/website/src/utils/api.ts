@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/auth";
 import type { APIResponseValue } from "@suppora/shared";
 import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type Method } from "axios";
 
-const useDevelopmentApiHost = false
+const useDevelopmentApiHost = true
 
 export const API_BaseUrl = useDevelopmentApiHost
     ? 'http://localhost:3000/api/v1'

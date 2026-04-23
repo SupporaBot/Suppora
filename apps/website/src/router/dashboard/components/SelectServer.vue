@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import { useAuthStore } from '@/stores/auth';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import { URLS } from '@/stores/layout';
     import type { API_SelfUserIdentity_Guild } from '@suppora/shared';
 

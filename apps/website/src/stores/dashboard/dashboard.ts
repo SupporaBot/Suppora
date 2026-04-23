@@ -1,11 +1,11 @@
 import { ApiRequest } from "@/utils/api"
-import { asyncState } from "@/utils/asyncState"
-import type { API_GuildChannel, API_GuildRole, APIResponseValue } from "@suppora/shared"
+import { asyncState, type AsyncStateOptions } from "@/utils/asyncState"
+import type { API_GuildChannel, API_GuildRole, APIResponseValue, DatabaseRow } from "@suppora/shared"
+import { fetchGuildTeams } from "./dashboard.api"
 
 // Reuseable - Guild Data State Config
-const guildDataStateOptions = {
+const guildDataStateOptions: AsyncStateOptions<any> = {
     cooldown: 60,
-    throwCooldown: true,
     throwError: true,
     transformData: (data: any) => data?.data
 } as const
@@ -18,12 +18,14 @@ export const useDashboardStore = defineStore('dashboard', () => {
     // Selected Guild:
     const guildId = ref<string | undefined>(undefined)
 
-
     // Guild API/DB Data
     const guildData = {
-        roles: asyncState(() => ApiRequest<API_GuildRole[]>({ url: `/guilds/${guildId.value}/roles` }), guildDataStateOptions),
-        channels: asyncState(() => ApiRequest<API_GuildChannel[]>({ url: `/guilds/${guildId.value}/channels` }), guildDataStateOptions)
+        roles: asyncState<API_GuildRole[]>(() => ApiRequest({ url: `/guilds/${guildId.value}/roles` }), guildDataStateOptions),
+        channels: asyncState<API_GuildChannel[]>(() => ApiRequest({ url: `/guilds/${guildId.value}/channels` }), guildDataStateOptions),
+        teams: asyncState<DatabaseRow<'teams'>[]>(() => fetchGuildTeams(guildId.value), guildDataStateOptions),
     }
+    const guildDataLoading = computed(() => Object.values(guildData)?.map(d => d.loading.value)?.some(d => d == true))
+    const guildDataReady = computed(() => Object.values(guildData)?.map(d => d.ready.value)?.every(d => d == true))
 
     // Reset Store - Util:
     async function reset() {
@@ -40,7 +42,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
             const fetchPromises = Object.values(guildData)?.map(d => d.get())
             await Promise.all(fetchPromises)
             console.log(`Selected Dashboard Guild`, guildId.value, 'Fetched Data:')
-            console.log({ roles: guildData.roles.state.value, channels: guildData.channels.state.value })
+            console.log(Object.entries(guildData)?.map(([n, state]) => ({ [n]: state.state.value }))?.flat())
         } else {
             reset()
         }
@@ -59,6 +61,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
     return {
         guildId,
         guildData,
+        guildDataLoading,
+        guildDataReady,
         nav,
     }
 })

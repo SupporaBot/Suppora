@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import { useAuthStore } from '@/stores/auth';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import SelectedServer from './selectedServer.vue';
     import { useLayoutStore } from '@/stores/layout';
     import TabButton from './tabButton.vue';

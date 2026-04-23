@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import PanelCard from './PanelCard.vue';
 
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import { useAuthStore } from '@/stores/auth';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import { autoUpdate, flip, offset, shift, useFloating, } from '@floating-ui/vue';
     import { flattenJSON } from 'three/src/animation/AnimationUtils.js';
 

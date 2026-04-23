@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import Tooltip from '@/components/Tooltip.vue';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import DashboardTooltip from '../../DashboardTooltip.vue';
     // import TeamEditDialog from './TeamEditDialog.vue';
 

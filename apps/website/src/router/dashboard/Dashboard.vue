@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import { useAuthStore } from '@/stores/auth';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import LoadingDashboard from './components/LoadingDashboard.vue';
     import DashboardDataFailure from './components/DashboardDataFailure.vue';
     import DashboardView from './DashboardView.vue';

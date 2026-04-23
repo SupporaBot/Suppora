@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import TeamCard from './TeamCard.vue';
     import TeamFormDialog, { type TeamDialogFormSchema } from './TeamFormDialog.vue';
 
@@ -8,7 +8,7 @@
     // Services:
     const dashboard = useDashboardStore()
 
-    const rolesData = computed(() => dashboard.guildData.roles)
+    const teams = computed(() => dashboard.guildData.teams.state ?? [])
 
 
     // Teams Dialog
@@ -20,13 +20,6 @@
 
 <template>
     <main class="gap-2.5 flex pb-5 flex-col w-full grow">
-
-        <button @click="async () => { await rolesData.get(); console.log(rolesData.state) }"
-            :disabled="rolesData.meta.cooldown_secs_remaining() > 0" class="button-base">
-            Fetch
-        </button>
-
-        {{ rolesData.state ?? 'No Data' }}
 
         <!-- Teams Table -->
         <div
@@ -54,7 +47,7 @@
             <span class="w-full flex-center gap-2 p-2">
 
                 <!-- No Teams - Card -->
-                <div hidden class="block w-full">
+                <div v-if="!teams?.length" class="block w-full">
                     <span class="flex-center my-3.5 flex-row gap-1 text-text-2 w-full">
                         <Icon icon="material-symbols:no-sim-outline" />
                         <p>
@@ -64,34 +57,29 @@
 
 
                     <!-- Tip(s) - Creating Teams(s) -->
-                    <div hidden>
+                    <div>
                         <div class="w-27 h-0.75 bg-bg-3 rounded-full mx-auto my-2 mt-1.5" />
 
                         <span class="text-sm text-text-3">
                             <b class="text-brand-2 font-semibold">TIP:</b>
                             Create your first staff <span @click="" class="text-code">Team</span>
-                            to assign specific tickets/<span @click="dashboard.nav.currentTab = 'Panels'"
-                                class="text-code hover:text-brand-2 hover:underline cursor-pointer">Panels</span> to
+                            to assign specific Ticket <span @click="dashboard.nav.changeTab('Panels')"
+                                class="text-code link">Panels</span> to
                             them.
                         </span>
-
-                        <p class="text-sm text-text-3">
-                            <b class="text-brand-2 font-semibold">TIP:</b> You can create one or wait for one of your
-                            server
-                            members to open one themselves.
-                        </p>
 
                     </div>
 
                 </div>
 
                 <!-- Subheading - Ticket Count -->
-                <span class="text-text-3 text-sm w-full">
-                    Total Teams: <b class="font-semibold">1</b>
+                <span v-if="teams?.length" class="text-text-3 text-sm w-full">
+                    Total Teams: <b class="font-semibold">{{ teams?.length ?? 0 }}</b>
                 </span>
 
                 <!-- Team Card -->
-                <TeamCard :id="randomId" @startEdit="(id, p) => { teamDialogEditPayload = { ...p, id } }" />
+                <TeamCard v-for="t in teams" :team="t"
+                    @startEdit="(id, p) => { teamDialogEditPayload = { ...p, id } }" />
             </span>
 
         </div>

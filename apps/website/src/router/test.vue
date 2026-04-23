@@ -10,7 +10,7 @@
     const fetchTest = asyncState(() => ApiRequest({ url: '/system/status', method: 'GET' }), {
         cooldown: 5
     })
-    const fetchData = computed(() => fetchTest.state.value?.data)
+    const fetchData = computed(() => fetchTest.state.value)
 
 </script>
 

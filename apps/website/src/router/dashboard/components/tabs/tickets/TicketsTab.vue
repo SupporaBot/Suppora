@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import TicketCard from './TicketCard.vue';
     import type { Database } from '@suppora/shared';
     import { DateTime } from 'luxon';

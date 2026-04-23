@@ -70,7 +70,7 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
 // URL: https://api.suppora.app/guilds/:guildId/teams/:teamId
 // ! Fixes Needed: Fallbacks when guild/roles unavailable
 teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (req, res) => {
-    const guildId = req.params?.['stringId'] as string
+    const guildId = req.params?.['guildId'] as string
     const teamId = req.params?.['teamId'] as string
     try {
         // Confirm Guild & Team Ids:
@@ -126,7 +126,7 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
             guild_id: guildId,
             id: teamId,
             title: data.title
-        })
+        }).eq('id', teamId).select().single()
         if (!updatedTeam || updatedTeamErr) throw new Error('Failed to update existing team within database!', { cause: updatedTeamErr })
 
         // Return Success:
@@ -146,7 +146,7 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
 // REMOVE / DELETE - Existing Team:
 // URL: https://api.suppora.app/guilds/:guildId/teams/:teamId
 teamsRouter.delete('/:teamId', verifyToken, verifyGuildMembership(true), async (req, res) => {
-    const guildId = req.params?.['stringId'] as string
+    const guildId = req.params?.['guildId'] as string
     const teamId = req.params?.['teamId'] as string
     try {
         // Confirm Guild & Team Ids:

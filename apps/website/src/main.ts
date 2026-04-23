@@ -5,9 +5,11 @@ import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
 import { type PrimeVueConfiguration } from 'primevue'
+import { PrimeVueTheme } from './styles/PrimeVueTheme';
+import ConfirmationService from 'primevue/confirmationservice';
 
 import { initializeAuthStateWatcher } from './stores/auth'
-import { PrimeVueTheme } from './styles/PrimeVueTheme';
+
 
 const app = createApp(App)
 
@@ -17,7 +19,8 @@ app.use(PrimeVue, <PrimeVueConfiguration>{
     ripple: true
 })
 app.use(createPinia())
-app.use(router)
+app.use(ConfirmationService),
+    app.use(router)
 
 
 // Mount App

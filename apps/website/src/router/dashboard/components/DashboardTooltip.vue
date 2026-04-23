@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import { useLayoutStore } from '@/stores/layout';
     import { autoUpdate, flip, offset, shift, useFloating, type Placement } from '@floating-ui/vue';
 

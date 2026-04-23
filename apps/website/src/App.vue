@@ -4,6 +4,7 @@
   import AppHeader from './components/AppHeader.vue';
   import { useLayoutStore } from './stores/layout';
   import Notifier from './router/account/components/notifier/notifier.vue';
+  import ConfirmDialog from './components/confirm/ConfirmDialog.vue';
 
   // Services:
   const nav = useLayoutStore()
@@ -27,6 +28,7 @@
   <AppFooter />
 
   <Notifier />
+  <ConfirmDialog />
 
 </template>
 

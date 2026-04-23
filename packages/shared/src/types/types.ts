@@ -1,6 +1,6 @@
-export * from './supabase'
 export * from './apiResults'
 export * from './botPermissions'
 export * from './identities'
 export * from './ticketForms'
 export * from './apiGuild'
+export * from './database/database'

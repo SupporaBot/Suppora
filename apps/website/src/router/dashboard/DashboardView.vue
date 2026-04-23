@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import { useLayoutStore } from '@/stores/layout';
-    import { useDashboardStore } from '@/stores/dashboard';
+    import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import { useAuthStore } from '@/stores/auth';
     import DashboardNav from './components/nav/dashboardNav.vue';
     import TicketsTab from './components/tabs/tickets/TicketsTab.vue';
@@ -39,22 +39,37 @@
         <!-- Main Dashboard Content -->
         <div class="flex w-full flex-row grow flex-center gap-3 z-1! p-4 pb-0 ml-13.5 overflow-y-auto"
             :class="{ 'md:ml-47': dashboard.nav.expanded }">
-            <div class="flex grow w-full h-full">
 
-                <!-- Dashboard Tab View(s): -->
-                <Transition name="blur-fade" mode="out-in">
+            <Transition name="fade" mode="out-in">
+                <!-- Loading View -->
+                <div v-if="dashboard.guildDataLoading || !dashboard.guildDataReady" class="flex grow w-full h-full">
+                    <span
+                        class="bg-bg-3 p-4.5 h-fit m-auto rounded-lg border-2 border-ring-2 flex-center flex-col gap-1.5">
+                        <ProgressSpinner stroke-width="4" />
+                        <p class="font-semibold"> Loading Server Data </p>
+                        <p class="text-text-2 text-xs mt-0.5"> Please Wait...</p>
+                    </span>
+                </div>
 
-                    <TicketsTab v-if="currentTab == 'Tickets'" />
+                <!-- Tabs View -->
+                <div v-else class="flex grow w-full h-full">
 
-                    <PanelsTab v-else-if="currentTab == 'Panels'" />
+                    <!-- Dashboard Tab View(s): -->
+                    <Transition name="blur-fade" mode="out-in">
 
-                    <TeamsTab v-else-if="currentTab == 'Teams'" />
+                        <TicketsTab v-if="currentTab == 'Tickets'" />
 
-                    <SettingsTab v-else-if="currentTab == 'Settings'" />
+                        <PanelsTab v-else-if="currentTab == 'Panels'" />
 
-                </Transition>
+                        <TeamsTab v-else-if="currentTab == 'Teams'" />
 
-            </div>
+                        <SettingsTab v-else-if="currentTab == 'Settings'" />
+
+                    </Transition>
+
+                </div>
+            </Transition>
+
         </div>
 
     </main>
