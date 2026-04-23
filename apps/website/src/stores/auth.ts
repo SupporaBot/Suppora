@@ -18,10 +18,9 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null);
     const session = ref<Session | null>(null);
 
-    // Identity:
+    // Identity & Fetch Method:
     const identity = ref<API_SelfUserIdentity | undefined>(undefined)
     async function getSelfIdentity(forceAPI?: boolean) {
-
         // Mark Auth Unready:
         authReady.value = false
         // Method Vars:
@@ -106,7 +105,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
 
-
     // Util - Waits for Auth to be ready */
     async function waitForAuthReady(timeoutMs = 10_000) {
         type AuthReadyResult = {
@@ -160,50 +158,6 @@ export const useAuthStore = defineStore('auth', () => {
         location.assign('/')
     }
 
-    // const identity = (() => useAsyncState(
-    //     fetchSelfIdentity,
-    //     undefined,
-    //     {
-    //         immediate: false
-    //     }
-    // ))()
-
-
-    // Method - Fetch Self Identity:
-    const selfIdentityFetchMinCooldownMins = 2.5
-    // async function fetchSelfIdentity(forceApi?: boolean) {
-    //     // Confirm Session:
-    //     if (!session.value) return Promise.reject(`(!) Cannot fetch identity w/o a valid session!`)
-    //     // Check Cooldown:
-    //     const prevLastFetchedAt = DateTime.fromISO(String(identity.state.value?._fetched_at), { zone: 'utc' })
-    //     const nextFetchAllowedAt = prevLastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
-    //     if (nextFetchAllowedAt > DateTime.utc()) {
-    //         console.warn(`[Self Identity]: COOLDOWN - Too many requests! You need to wait at least ${nextFetchAllowedAt?.diffNow('second')?.seconds ?? '?'} seconds before you fetch your identity again!`)
-    //         return Promise.reject('COOLDOWN')
-    //     }
-
-
-    //     // Make API Request:
-    //     const apiPath = forceApi ? '/identity/users/@me?force=true' : '/identity/users/@me';
-    //     const { data, error, status, response } = await ApiRequest<API_SelfUserIdentity>({ method: 'GET', url: apiPath })
-    //     // If Redirection - (Re-Authenticate)
-    //     if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden) {
-    //         const location = response?.headers?.['Location']
-    //         console.warn(`[↗️ Self Identity]: Failed - Must Re-Authenticate - REDIRECTION!`, { redirect: location })
-    //         if (location) location.assign(location)
-    //     }
-    //     if (error || !data) {
-    //         console.warn('[❌ Self Identity]: API FAIL', { data, error })
-    //     } else {
-    //         console.info('[👤 Self Identity]: FETCHED', { data })
-    //         const lastFetchedAt = DateTime.fromISO(String(data?._fetched_at), { zone: 'utc' })
-    //         const r = {
-    //             ...data,
-    //             _next_fetch_allowed_at: lastFetchedAt?.plus({ minutes: selfIdentityFetchMinCooldownMins })
-    //         }
-    //         return r
-    //     }
-    // }
 
     // Util - Reset Store
     function reset() {

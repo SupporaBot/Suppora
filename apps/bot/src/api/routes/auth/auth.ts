@@ -22,9 +22,8 @@ const oAuthRedirectURI = environment == 'production' || forceProdAuthApi
     ? 'https://api.suppora.app/auth/discord-callback'
     : 'http://localhost:3000/api/v1/auth/discord-callback';
 const oAuthUrl = environment == 'production'
-    ? `https://discord.com/oauth2/authorize?client_id=1491140828574515330&response_type=code&redirect_uri=${encodeURIComponent(oAuthRedirectURI)}&scope=${oAuth2ScopesURI}`
-    : `https://discord.com/oauth2/authorize?client_id=1491140828574515330&response_type=code&redirect_uri=${encodeURIComponent(oAuthRedirectURI)}&scope=${oAuth2ScopesURI}`;
-// oAuth2 Token Response Type:
+    ? `https://discord.com/oauth2/authorize?client_id=1491140828574515330&response_type=code&redirect_uri=${encodeURIComponent(oAuthRedirectURI)}&scope=${oAuth2ScopesURI}&prompt=none`
+    : `https://discord.com/oauth2/authorize?client_id=1491140828574515330&response_type=code&redirect_uri=${encodeURIComponent(oAuthRedirectURI)}&scope=${oAuth2ScopesURI}&prompt=none`;
 
 
 // Router:
