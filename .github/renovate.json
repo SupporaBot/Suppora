@@ -1,28 +1,30 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "config:recommended",
-        ":dependencyDashboard"
-        ":semanticCommitType(chore)",
-        "helpers:githubDigestChangelogs",
-        "mergeConfidence:age-confidence-badges"
-    ]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommitType(chore)",
+    "helpers:githubDigestChangelogs",
+    "mergeConfidence:age-confidence-badges"
+  ],
+
+  "automergeType": "pr",
+
+  "packageRules": [
     {
-      "packageRules": [
-        {
-          "matchUpdateTypes": ["patch"],
-          "groupName": "patch updates",
-          "automerge": true
-        },
-        {
-          "matchUpdateTypes": ["digest"],
-          "groupName": "digest updates",
-          "automerge": true
-        },
-        {
-          "matchUpdateTypes": ["minor"],
-          "groupName": "minor updates"
-        }
-      ]
+      "matchUpdateTypes": ["patch"],
+      "groupName": "patch updates",
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["digest"],
+      "groupName": "digest updates",
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "groupName": "minor updates"
     }
+  ]
 }
