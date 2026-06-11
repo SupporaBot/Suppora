@@ -10,21 +10,32 @@
   ],
 
   "automergeType": "pr",
+  
+  "labels": ["dependencies"],
+  "dependencyDashboardLabels": ["dependencies"],
 
   "packageRules": [
     {
       "matchUpdateTypes": ["patch"],
       "groupName": "patch updates",
+      "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
       "matchUpdateTypes": ["digest"],
       "groupName": "digest updates",
+      "minimumReleaseAge": "3 days",
       "automerge": true
     },
     {
       "matchUpdateTypes": ["minor"],
-      "groupName": "minor updates"
+      "groupName": "minor updates",
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "3 days",
+      "dependencyDashboardApproval": true
     }
   ]
 }
