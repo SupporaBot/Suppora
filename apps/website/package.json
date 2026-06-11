@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@cloudflare/vite-plugin": "^1.32.3",
+    "@cloudflare/vite-plugin": "^1.40.1",
     "@floating-ui/vue": "^1.1.11",
     "@primeuix/themes": "^2.0.3",
     "@primevue/forms": "^4.5.5",
@@ -19,7 +19,7 @@
     "@suppora/shared": "*",
     "@tailwindcss/vite": "^4.2.2",
     "@vueuse/core": "^14.2.1",
-    "axios": "^1.15.0",
+    "axios": "^1.17.0",
     "luxon": "^3.7.2",
     "pinia": "^3.0.4",
     "primevue": "^4.5.5",
@@ -45,7 +45,7 @@
     "vite": "^8.0.3",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.6",
-    "wrangler": "^4.83.0"
+    "wrangler": "^4.99.0"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

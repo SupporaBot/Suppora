@@ -14,7 +14,7 @@
     "@logtail/node": "^0.5.8",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
-    "axios": "^1.15.0",
+    "axios": "^1.17.0",
     "chrono-node": "^2.9.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
