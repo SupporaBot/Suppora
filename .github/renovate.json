@@ -6,7 +6,7 @@
     ":dependencyDashboard",
     ":semanticCommitType(chore)",
     "helpers:githubDigestChangelogs",
-    "mergeConfidence:age-confidence-badges"
+    "mergeConfidence:all-badges"
   ],
 
   "automergeType": "pr",
