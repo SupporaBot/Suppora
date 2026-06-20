@@ -58,16 +58,18 @@
 
 
                     <!-- Tip(s) - Creating Teams(s) -->
-                    <div>
+                    <div class="">
                         <div class="w-27 h-0.75 bg-bg-3 rounded-full mx-auto my-2 mt-1.5" />
 
-                        <span class="text-sm text-text-3">
-                            <b class="text-brand-2 font-semibold">TIP:</b>
-                            Create your first staff <span @click="" class="text-code">Team</span>
-                            to assign specific Ticket <span @click="dashboard.nav.changeTab('Panels')"
-                                class="text-code link">Panels</span> to
-                            them.
-                        </span>
+                        <div class="flex w-full bg-bg-3/35 rounded-md p-1.5">
+                            <span class="text-sm text-text-3">
+                                <b class="text-brand-2 font-semibold">TIP:</b>
+                                Create your first staff <span @click="" class="text-code">Team</span>
+                                to assign specific Ticket <span @click="dashboard.nav.changeTab('Panels')"
+                                    class="text-code link">Panels</span> to
+                                them.
+                            </span>
+                        </div>
 
                     </div>
 

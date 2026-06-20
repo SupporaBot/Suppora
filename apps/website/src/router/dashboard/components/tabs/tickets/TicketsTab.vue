@@ -94,7 +94,7 @@
             <span class="w-full flex-center gap-2 p-2">
 
                 <!-- No Tickets - Card -->
-                <div hidden class="block w-full">
+                <div hidden class="block w-full space-y-1.5">
                     <span class="flex-center my-3.5 flex-row gap-1 text-text-2 w-full">
                         <Icon icon="material-symbols:no-sim-outline" />
                         <p>
@@ -104,25 +104,31 @@
 
 
                     <!-- Tip - Create Panel(s) -->
-                    <div>
+                    <div class="space-y-1.5">
                         <div class="w-27 h-0.75 bg-bg-3 rounded-full my-2 mx-auto mt-1.5" />
 
+                        <div class="flex flex-col w-full bg-bg-3/35 rounded-md p-1.5">
+                            <span class="text-sm text-text-3">
+                                <b class="text-brand-2 font-semibold">TIP:</b>
+                                Create your first <span @click="dashboard.nav.currentTab = 'Panels'"
+                                    class="bg-bg-3 rounded font-semibold px-0.75 py-px hover:underline hover:text-brand-2 cursor-pointer">Ticket
+                                    Panel</span> for server members to easily create new tickets.
+                            </span>
+                        </div>
 
-                        <span class="text-sm text-text-3">
-                            <b class="text-brand-2 font-semibold">TIP:</b>
-                            Create your first <span @click="dashboard.nav.currentTab = 'Panels'"
-                                class="bg-bg-3 rounded font-semibold px-0.75 py-px hover:underline hover:text-brand-2 cursor-pointer">Ticket
-                                Panel</span> for server members to easily create new tickets.
-                        </span>
+                        <div class="flex flex-col w-full bg-bg-3/35 rounded-md p-1.5">
+                            <p class="text-sm text-text-3">
+                                <b class="text-brand-2 font-semibold">TIP:</b> You can create a <b
+                                    class="text-code">Ticket</b>
+                                or wait for one of your server
+                                members to open
+                                one themselves.
+                            </p>
+                        </div>
 
                     </div>
 
-                    <p class="text-sm text-text-3">
-                        <b class="text-brand-2 font-semibold">TIP:</b> You can create a <b class="text-code">Ticket</b>
-                        or wait for one of your server
-                        members to open
-                        one themselves.
-                    </p>
+
 
                 </div>
 

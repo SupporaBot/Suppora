@@ -6,7 +6,7 @@
     // Modal/Field Value:
     const value = defineModel<string>('value')
 
-    // Popup
+    // Popup:
     const popupVisible = ref(false)
     const inputRef = useTemplateRef('inputRef')
     const popupRef = useTemplateRef('popupRef')
@@ -25,24 +25,25 @@
         ignore: [inputRef]
     })
 
-    // Watch Popup Visibility -- OnMounted:
-    watch(popupVisible, async () => {
-        console.log('Visible!')
-        if (!popupVisible.value) {
-            hexInputValue.value = ''
-            await nextTick()
-            hexInputErrors.value = []
+
+    // Hex Color String Input / Form:
+    const hexInputValue = ref('')
+    const hexInputErrors = ref<string[]>([])
+    // Watch for Hex Text Input:
+    watch(hexInputValue, async (iv) => {
+        if (iv) {
+            if (hexCodeRegEx.test(iv)) {
+                const adj = iv?.replace(/(_)?#?/g, '')
+                value.value = adj
+                hexInputErrors.value = []
+            } else {
+                hexInputErrors.value = ['Invalid Hex Input']
+            }
         }
     })
 
-    // onMounted(() => {
-    //     if (!value.value) {
-    //         value.value = '717ff0'
-    //     }
-    // })
 
-
-    // Dynamic Field Text Color:
+    // UI Util: Dynamic Field Text Color:
     const textColor = computed(() => {
         if (!value.value) return 'white'
         const hex = value.value.replace('#', '')
@@ -54,33 +55,11 @@
         return luminance > 160 ? 'black' : 'white'
     })
 
-
-    // Hex Color String Input / Form:
-    const hexInputValue = ref('')
-    const hexInputErrors = ref<string[]>([])
-    watch(hexInputValue, (iv) => {
-        console.log(iv)
-        if (iv && hexCodeRegEx.test(iv)) {
-            const adj = iv?.replace(/(_)?#?/g, '')
-            console.info('Valid Input', adj)
-            value.value = adj
-            hexInputErrors.value = []
-        } else {
-            hexInputErrors.value = ['Invalid Hex Input']
-        }
-    })
-
-    // Form Field Ref:
-    const formFieldRef = useTemplateRef<useFormFieldInstance>('formFieldRef')
-
-    const fieldValue = computed(() => formFieldRef.value?.states.value)
-
-
 </script>
 
 
 <template>
-    <FormField name="color" v-slot="$field" ref="formFieldRef">
+    <FormField name="color">
         <span ref="inputRef" @click="popupVisible = !popupVisible"
             class="w-full cursor-pointer flex h-10.5 p-1.75 rounded-md border border-ring-2 hover:border-ring-1 transition-all bg-bg-3">
 
@@ -97,13 +76,13 @@
             <div ref="popupRef" v-if="popupVisible" :style="floatingStyles"
                 class="flex-center z-777! bg-bg-3 border border-ring-2 rounded-md p-1.5">
                 <div class="flex flex-col w-fit h-fit">
-                    <ColorPicker name="color" v-model:model-value="value" inline default-color="717ff0"
+                    <!-- Color Picker Input -->
+                    <ColorPicker name="color" v-model:model-value="value" inline :default-color="value"
                         :pt="{ overlay: 'bg-bg-2! border-0!', hue: 'rounded! ring! ring-ring-1!', colorSelector: 'overflow-clip! rounded! ring! ring-ring-2!', colorBackground: 'rounded! overflow-clip!' }" />
                     <!-- Color String Input -->
                     <div class="w-full flex flex-col gap-1 flex-wrap p-2 z-2">
-
-                        <InputMask name="hexInput" v-model:model-value="hexInputValue" mask="#******" size="small"
-                            class="text-xs!" fluid :placeholder="'#' + value || '#HexColor'" />
+                        <InputMask v-model:model-value="hexInputValue" mask="#******" size="small" class="text-xs!"
+                            fluid :placeholder="'#' + value || '#HexColor'" />
                         <p class="w-full text-xs text-danger-2" v-for="err in hexInputErrors">
                             {{ err }}
                         </p>

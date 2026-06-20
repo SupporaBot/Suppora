@@ -24,21 +24,17 @@
     // Modal/Form Action Mode:
     const formMode = ref<'new' | 'edit'>('new')
 
+
+    // Team Form Schema
+    const FormSchema = TeamSchema.pick({
+        title: true
+    }).and(z.object({
+        color: z.string().regex(/^(#)?[a-fA-F0-9]{6}$/g, 'Please enter a valid Team color.')
+    }))
+    export type TeamDialogFormSchema = z.infer<typeof FormSchema>
+
     // Editing Team Id:
     const editingTeamId = ref<string | undefined>(undefined)
-
-
-    const guildTeams = computed(() => dashboard.guildData.teams.state)
-    const guildRoles = computed(() => dashboard.guildData.roles.state)
-
-    // const getRoleColor = () => {
-    //     const team = guildTeams.value?.find(t => t.id == editingTeamId.value)
-    //     if (!team) return '717ff0'
-    //     const roleId = team.role_id_on_call
-    //     const role = guildRoles.value?.find(r => r.id == roleId)
-    //     const color = role?.color as number || 0x717ff0
-    //     return `${color.toString(16)}`
-    // }
 
     // Start/Watch Editing Payload:
     watch(editPayload, async (p) => {
@@ -46,34 +42,44 @@
             formMode.value = 'edit'
             editingTeamId.value = p.id
             isVisible.value = true
+            colorInputValue.value = p.color
             await nextTick()
             formRef.value?.setFieldValue('title', p.title)
             formRef.value?.setFieldValue('color', p.color)
+            await formRef.value?.validate()
         }
     })
 
-    // Team Form Schema
-    const FormSchema = TeamSchema.pick({
-        title: true
-    }).and(z.object({
-        color: z.string().regex(/^(#)?[a-fA-F0-9]{6}$/g,)
-    }))
-    export type TeamDialogFormSchema = z.infer<typeof FormSchema>
+
 
     // Form El Ref:
     const formRef = useTemplateRef<FormInstance>('formRef')
+
+    // Color Picker Value Ref:
+    const defaultTeamRoleColor = '717ff0'
+    const colorInputValue = ref<string | null>(defaultTeamRoleColor)
+    watch(colorInputValue, (v) => {
+        if (v) {
+            formRef.value?.setFieldValue('color', v)
+        } else {
+            colorInputValue.value = defaultTeamRoleColor
+            formRef.value?.setFieldValue('color', defaultTeamRoleColor)
+        }
+    })
 
 
     // Reset Form/Dialog Fn:
     function reset() {
         formRef.value?.reset()
         editingTeamId.value = undefined
+        editPayload.value = undefined
         formMode.value = 'new'
         submitState.value = 'idle'
-        // formRef.value?.setFieldValue('color', '717ff0')
-        console.log('Reset Color Value', formRef.value?.getFieldState('color')?.value)
+        colorInputValue.value = null
     }
 
+
+    // Team (Edit) Deletion Prompt:
     const deletePromptContent = useTemplateRef('deletePromptContent')
     function promptDelete() {
         confirm.require({
@@ -102,21 +108,23 @@
         })
     }
 
+
     // Form Submission:
     const submitState = ref<(SubmitStatus | 'deleting')>('idle')
     async function formSubmit(e: FormSubmitEvent<TeamDialogFormSchema> | FormSubmitEvent) {
         try {
             submitState.value = 'loading'
             const untouched = Object.values(e.states).every(s => !s.touched && !s.dirty)
-            console.log({ valid: e.valid, values: e.states, untouched, e })
+
             if (formMode.value == 'edit' && untouched) {
                 // Form Untouched:
                 isVisible.value = false
                 reset()
                 return
             }
-            const testReturn = true
+            const testReturn = false
             if (testReturn) {
+                console.info({ valid: e.valid, values: e.states, untouched, e })
                 return console.warn('Prevented submission! - Testing')
             }
             if (e.valid) {
@@ -136,6 +144,7 @@
                         })
                     } else {
                         // Succeeded:
+                        submitState.value = 'success'
                         isVisible.value = false
                         reset()
                     }
@@ -155,6 +164,7 @@
                         })
                     } else {
                         // Succeeded:
+                        submitState.value = 'success'
                         isVisible.value = false
                         reset()
                     }
@@ -169,19 +179,33 @@
                 })
             }
         } finally {
-            await dashboard.guildData.teams.get({
-                overrideCooldown: true,
-                silenceLoading: true
-            })
+            // Refresh Updated Guild Data:
+            if (submitState.value != 'failed') {
+                await Promise.allSettled([
+                    dashboard.guildData.teams.get({
+                        overrideCooldown: true,
+                        silenceLoading: true
+                    }),
+                    dashboard.guildData.roles.get({
+                        overrideCooldown: true,
+                        silenceLoading: true
+                    })
+                ])
+            }
+            // Reset Submit Status:
             setTimeout(() => {
                 submitState.value = 'idle'
             }, 2_000);
         }
     }
 
-    // On Unmounted:
-    watch(isVisible, (visible) => {
+    // On Un/mounted:
+    watch(isVisible, async (visible) => {
         if (!visible) reset()
+        else {
+            await nextTick()
+            formRef.value?.setFieldValue('color', colorInputValue.value)
+        }
     }, { immediate: true })
 
 </script>
@@ -196,6 +220,7 @@
                 <Form v-slot="$form" @submit="formSubmit" :resolver="zodResolver(FormSchema)" ref="formRef"
                     class="w-full flex flex-col">
 
+                    <!-- Form Header -->
                     <header class="flex w-full items-center p-3.5">
                         <span class="flex-center gap-1.25">
                             <Icon icon="mdi:users" class="size-7" />
@@ -213,7 +238,9 @@
                                 <Icon icon="mdi:text" />
                                 <p> Title </p>
                             </label>
+
                             <InputText name="title" placeholder="Ex: Support" />
+
                             <ul v-if="$form.title?.invalid" v-for="err in $form.title?.errors"
                                 class="flex flex-col gap-1.25 px-1 list-none list-inside">
                                 <li class="text-sm font-semibold w-full text-danger-2">
@@ -230,7 +257,7 @@
                                 <p> Color </p>
                             </label>
 
-                            <ColorInput />
+                            <ColorInput v-model:value="(colorInputValue as string)" />
 
                             <ul v-if="$form.color?.invalid" v-for="err in $form.color?.errors"
                                 class="flex flex-col gap-1.25 px-1 list-none list-inside">
@@ -242,7 +269,9 @@
 
                     </div>
 
+                    <!-- Form Footer -->
                     <footer class="w-full flex-center gap-4 p-4 pt-2">
+                        <!-- Delete Team -->
                         <Button @click="promptDelete" :disabled="submitState != 'idle'" v-if="formMode == 'edit'"
                             unstyled title="Remove"
                             class="button-base bg-bg-2 gap-0.75 text-text-2 hover:text-danger-2 max-sm:aspect-square">
@@ -252,12 +281,13 @@
                             <p class="semibold sm:flex hidden"> Remove </p>
                         </Button>
 
+                        <!-- Save Team / Cancel Edits -->
                         <span class="flex-center flex-row gap-4 ml-auto">
-                            <Button unstyled class="button-base" @click="isVisible = false">
+                            <Button unstyled title="Cancel" class="button-base" @click="isVisible = false">
                                 Cancel
                             </Button>
-                            <Button :disabled="submitState != 'idle'" unstyled type="submit" class="button-base gap-1"
-                                :class="{
+                            <Button title="Save" :disabled="submitState != 'idle'" unstyled type="submit"
+                                class="button-base gap-1" :class="{
                                     'disabled:ring-danger-2!': submitState == 'failed',
                                     'disabled:ring-success-2!': submitState == 'success'
                                 }">

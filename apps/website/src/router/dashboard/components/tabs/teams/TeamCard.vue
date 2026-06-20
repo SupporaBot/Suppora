@@ -18,11 +18,19 @@
     const guildRoles = computed(() => dashboard.guildData.roles.state ?? [])
     const onCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_on_call))
     const offCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_off_call))
+    const roleColorNormalized = computed(() => String(onCallRole.value?.color?.toString(16)) || '717ff0')
 
     const roleIssues = computed(() => {
         return false
     })
 
+    // Start Edit - Util:
+    const startTeamEdit = () => {
+        emits('startEdit', props.team.id, {
+            title: t.value?.title,
+            color: roleColorNormalized.value
+        })
+    }
 
     // Start Edit - Emit:
     const emits = defineEmits<{
@@ -39,7 +47,7 @@
 
             <div class="flex-center items-center! gap-1.5">
                 <img hidden :src="'./discord.png'" class="size-7 rounded-md" />
-                <span class="bg-zinc-500/90 size-7 rounded-md flex-center">
+                <span class="size-7 rounded-md flex-center" :style="{ background: `#${roleColorNormalized}` }">
                     <Icon icon="iconamoon:star-duotone" class="size-4.75" />
                 </span>
                 <p class="text-text-2 font-semibold text-lg">
@@ -53,9 +61,7 @@
             </span>
 
 
-            <Button title="View Ticket"
-                @click="emits('startEdit', props.team.id, { title: t?.title, color: String(onCallRole?.color?.toString(16) ?? '000000')?.replace('0x', '') })"
-                unstyled class="button-base bg-bg-4 ml-auto gap-1">
+            <Button title="Edit Team" @click="startTeamEdit" unstyled class="button-base bg-bg-4 ml-auto gap-1">
                 <Icon icon="mdi:pencil-outline" />
                 <p class="text-xs hidden sm:block"> Edit </p>
                 <p class="text-xs hidden md:block"> Team </p>

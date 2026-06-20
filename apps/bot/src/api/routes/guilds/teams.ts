@@ -1,7 +1,8 @@
 import express from 'express'
 import verifyToken from '../../middleware/verifyToken'
 import { log } from '../../../utils/logs/logs'
-import { ApiResponse, TeamSchema } from '@suppora/shared'
+import { ApiResponse, hexCodeRegEx, TeamSchema } from '@suppora/shared'
+import * as z from 'zod'
 import { HttpStatusCode } from 'axios'
 import { supabase } from '../../../utils/database/supabase'
 import { verifyGuildMembership } from '../../middleware/verifyGuildMember'
@@ -20,7 +21,9 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
         // Validate Request Data/Body
         const reqSchema = TeamSchema.pick({
             title: true
-        })
+        }).and(z.object({
+            color: z.string().regex(hexCodeRegEx)
+        }))
         const validated = reqSchema.safeParse(req.body, { reportInput: true })
         if (!validated.success) return new ApiResponse(res).failure(`[BAD REQUEST]: Invalid body/team data provided!`, HttpStatusCode.BadRequest)
         const data = validated.data
@@ -30,14 +33,15 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
         if (!guild) return new ApiResponse(res).failure(`[Internal Error]: Cannot find/fetch guild to create team for!`, 500)
 
         // Create Server Roles:
+        const roleColor = (parseInt(String(data?.color)?.replace('#', ''), 16) || 0x717ff0)
         const [onCallRole, offCallRole] = await Promise.all([
             guild.roles.create({
                 name: `${data.title} - On Call`,
-                color: 0x717ff0
+                color: roleColor
             }),
             guild.roles.create({
                 name: `${data.title} - Off Call`,
-                color: 0x717ff0
+                color: roleColor
             })
         ])
 
@@ -77,7 +81,9 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
         // Validate Request Data/Body
         const reqSchema = TeamSchema.pick({
             title: true
-        })
+        }).and(z.object({
+            color: z.string().regex(hexCodeRegEx)
+        }))
         const validated = reqSchema.safeParse(req.body, { reportInput: true })
         if (!validated.success) return new ApiResponse(res).failure(`[BAD REQUEST]: Invalid body/team data provided!`, HttpStatusCode.BadRequest)
         const data = validated.data
@@ -93,12 +99,13 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
         if (existingTeamErr || !existingTeam) throw new Error('Failed to fetch existing team for update from database!', { cause: existingTeamErr })
 
         // Update Server Roles:
+        const roleColor = (parseInt(String(data?.color)?.replace('#', ''), 16) || 0x717ff0)
         async function updateRole(id: string, type: 'On' | 'Off') {
             try {
                 // Edit Existing Role:
                 const updated = await guild.roles.edit(id, {
                     name: `${data.title} - ${type} Call`,
-
+                    color: roleColor
                 })
                 return updated
             } catch (editErr) {
@@ -108,7 +115,7 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
                         // Role Deleted/Missing:
                         const newRole = await guild.roles.create({
                             name: `${data.title} - ${type} Call`,
-                            color: 0x717ff0
+                            color: roleColor
                         })
                         return newRole
                     } else if (editErr.code == 50013 || editErr.code == 50001) {
