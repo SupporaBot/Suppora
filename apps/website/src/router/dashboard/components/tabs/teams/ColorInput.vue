@@ -4,7 +4,7 @@
     import { hexCodeRegEx } from '@suppora/shared'
 
     // Modal/Field Value:
-    const value = defineModel<string>('value')
+    const value = defineModel<string | null>('value')
 
     // Popup:
     const popupVisible = ref(false)

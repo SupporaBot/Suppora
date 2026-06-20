@@ -257,7 +257,7 @@
                                 <p> Color </p>
                             </label>
 
-                            <ColorInput v-model:value="(colorInputValue as string)" />
+                            <ColorInput :v-model:value="colorInputValue" />
 
                             <ul v-if="$form.color?.invalid" v-for="err in $form.color?.errors"
                                 class="flex flex-col gap-1.25 px-1 list-none list-inside">
