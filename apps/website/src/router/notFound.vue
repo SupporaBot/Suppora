@@ -1,8 +1,11 @@
 <script lang="ts" setup>
     import PixelSnow from '@/components/VueBits/PixelSnow.vue';
-    import { URLS } from '@/stores/layout';
+    import { URLS, useLayoutStore } from '@/stores/layout';
     import { Icon } from '@iconify/vue';
 
+    // Services:
+    const layout = useLayoutStore()
+    const headerPadding = computed(() => layout.appHeader.currentHeight)
 
 </script>
 
@@ -20,7 +23,7 @@
                 </p>
             </div>
 
-            <div class="flex bg-bg-3/50 border border-ring-2 p-3 rounded-md flex-col gap-0 max-md:text-sm mt-4">
+            <div class="flex z-3! bg-bg-3/50 border border-ring-2 p-3 rounded-md flex-col gap-0 max-md:text-sm mt-4">
                 <span class="text-text-2 lg:text-lg items-center">
                     <Icon icon="mdi:info-outline" class="inline relative bottom-px" /> This resource may have been
                     deleted or
@@ -40,7 +43,8 @@
 
         </div>
 
-        <PixelSnow :color="'#eeeeee'" :brightness="2.5" class="block z-0" />
+        <PixelSnow :color="'#eeeeee'" :brightness="2.5" class="block z-0"
+            :style="{ paddingTop: `${headerPadding}px` }" />
     </main>
 </template>
 
