@@ -7,6 +7,8 @@
     import useNotifier from '@/stores/notifier';
     import { ApiRequest } from '@/utils/api';
     import { useConfirm } from 'primevue';
+    import ColorInput from './ColorInput.vue';
+
 
     // Services:
     const dashboard = useDashboardStore()
@@ -25,6 +27,19 @@
     // Editing Team Id:
     const editingTeamId = ref<string | undefined>(undefined)
 
+
+    const guildTeams = computed(() => dashboard.guildData.teams.state)
+    const guildRoles = computed(() => dashboard.guildData.roles.state)
+
+    // const getRoleColor = () => {
+    //     const team = guildTeams.value?.find(t => t.id == editingTeamId.value)
+    //     if (!team) return '717ff0'
+    //     const roleId = team.role_id_on_call
+    //     const role = guildRoles.value?.find(r => r.id == roleId)
+    //     const color = role?.color as number || 0x717ff0
+    //     return `${color.toString(16)}`
+    // }
+
     // Start/Watch Editing Payload:
     watch(editPayload, async (p) => {
         if (p) {
@@ -33,13 +48,16 @@
             isVisible.value = true
             await nextTick()
             formRef.value?.setFieldValue('title', p.title)
+            formRef.value?.setFieldValue('color', p.color)
         }
     })
 
     // Team Form Schema
     const FormSchema = TeamSchema.pick({
         title: true
-    })
+    }).and(z.object({
+        color: z.string().regex(/^(#)?[a-fA-F0-9]{6}$/g,)
+    }))
     export type TeamDialogFormSchema = z.infer<typeof FormSchema>
 
     // Form El Ref:
@@ -52,14 +70,16 @@
         editingTeamId.value = undefined
         formMode.value = 'new'
         submitState.value = 'idle'
+        // formRef.value?.setFieldValue('color', '717ff0')
+        console.log('Reset Color Value', formRef.value?.getFieldState('color')?.value)
     }
 
+    const deletePromptContent = useTemplateRef('deletePromptContent')
     function promptDelete() {
         confirm.require({
-            header: 'Header',
-            message: `<span class="w-full flex-col gap-1"><span>You're about to <b>permanently delete</b> this <b class="text-code">Team</b>!</span> <br> <span class="text-danger-2 text-sm w-full block mt-4"><b class="text-code font-bold!">NOTE:</b> This action <u>cannot be undone!</u></span></span>`,
+            // header: 'Header',
+            message: deletePromptContent.value?.getHTML(),
             async accept() {
-                console.info('starting delete...', editingTeamId.value)
                 submitState.value = 'deleting'
                 try {
                     const { success, data, error } = await ApiRequest({ url: `/guilds/${dashboard.guildId}/teams/${editingTeamId.value}`, method: 'DELETE' })
@@ -76,11 +96,9 @@
                         dashboard.guildData.teams.get({ overrideCooldown: true, silenceLoading: true })
                     }
                 } finally {
-                    setTimeout(() => {
-                        submitState.value = 'idle'
-                    }, 3000);
+                    setTimeout(() => submitState.value = 'idle', 3000)
                 }
-            },
+            }
         })
     }
 
@@ -89,6 +107,18 @@
     async function formSubmit(e: FormSubmitEvent<TeamDialogFormSchema> | FormSubmitEvent) {
         try {
             submitState.value = 'loading'
+            const untouched = Object.values(e.states).every(s => !s.touched && !s.dirty)
+            console.log({ valid: e.valid, values: e.states, untouched, e })
+            if (formMode.value == 'edit' && untouched) {
+                // Form Untouched:
+                isVisible.value = false
+                reset()
+                return
+            }
+            const testReturn = true
+            if (testReturn) {
+                return console.warn('Prevented submission! - Testing')
+            }
             if (e.valid) {
                 if (formMode.value == 'new') {
                     // Creating NEW Team:
@@ -139,7 +169,10 @@
                 })
             }
         } finally {
-            await dashboard.guildData.teams.get({ overrideCooldown: true, silenceLoading: true })
+            await dashboard.guildData.teams.get({
+                overrideCooldown: true,
+                silenceLoading: true
+            })
             setTimeout(() => {
                 submitState.value = 'idle'
             }, 2_000);
@@ -151,16 +184,15 @@
         if (!visible) reset()
     }, { immediate: true })
 
-
 </script>
 
 
 <template>
     <Dialog :visible="isVisible" modal block-scroll
-        class="bg-bg-2! border-2! border-ring-2! w-[90%]! h-fit! p-0 m-8! max-w-xl">
+        class="bg-bg-2! border-2! border-ring-2! w-[90%]! h-fit! p-0 m-8! max-w-xl overflow-y-visible!">
 
         <template #container>
-            <div class="w-full flex h-fit flex-center gap-2.5 flex-col">
+            <div class="w-full flex h-fit flex-center gap-2.5 flex-col overflow-y-auto!">
                 <Form v-slot="$form" @submit="formSubmit" :resolver="zodResolver(FormSchema)" ref="formRef"
                     class="w-full flex flex-col">
 
@@ -181,8 +213,26 @@
                                 <Icon icon="mdi:text" />
                                 <p> Title </p>
                             </label>
-                            <InputText name="title" />
+                            <InputText name="title" placeholder="Ex: Support" />
                             <ul v-if="$form.title?.invalid" v-for="err in $form.title?.errors"
+                                class="flex flex-col gap-1.25 px-1 list-none list-inside">
+                                <li class="text-sm font-semibold w-full text-danger-2">
+                                    - {{ err?.message ?? 'Invalid Input' }}
+                                </li>
+                            </ul>
+                        </span>
+
+                        <!-- Color Input -->
+                        <span class="w-full flex flex-col gap-1.5 flex-wrap">
+                            <label for="color" class="flex-row gap-1 flex-center w-fit mr-auto"
+                                :class="{ 'text-danger-2': $form.color?.invalid }">
+                                <Icon icon="mdi:color" />
+                                <p> Color </p>
+                            </label>
+
+                            <ColorInput />
+
+                            <ul v-if="$form.color?.invalid" v-for="err in $form.color?.errors"
                                 class="flex flex-col gap-1.25 px-1 list-none list-inside">
                                 <li class="text-sm font-semibold w-full text-danger-2">
                                     - {{ err?.message ?? 'Invalid Input' }}
@@ -203,12 +253,18 @@
                         </Button>
 
                         <span class="flex-center flex-row gap-4 ml-auto">
-                            <Button unstyled class="button-base " @click="isVisible = false">
+                            <Button unstyled class="button-base" @click="isVisible = false">
                                 Cancel
                             </Button>
-                            <Button :disabled="submitState != 'idle'" unstyled type="submit" class="button-base gap-1">
-                                Save
-                                <Icon icon="mdi:check" class="relative top-px" />
+                            <Button :disabled="submitState != 'idle'" unstyled type="submit" class="button-base gap-1"
+                                :class="{
+                                    'disabled:ring-danger-2!': submitState == 'failed',
+                                    'disabled:ring-success-2!': submitState == 'success'
+                                }">
+                                <Icon v-if="submitState == 'loading'" icon="eos-icons:loading"
+                                    class="relative top-px" />
+                                <Icon v-else icon="mdi:check" class="relative top-px" />
+                                {{ formMode == 'new' ? 'Submit' : 'Save' }}
                             </Button>
                         </span>
                     </footer>
@@ -218,6 +274,25 @@
         </template>
 
     </Dialog>
+
+    <!-- Delete Prompt - Content -->
+    <div hidden ref="deletePromptContent">
+        <div class=" flex-col flex gap-1 w-full">
+            <span> You're about to <u>permanently delete</u> this <b class="text-code font-semibold">Team</b>!</span>
+
+            <div class="text-sm mt-4 w-full flex flex-col gap-2">
+                <span class="w-full pb-2 flex flex-row items-center gap-1.5">
+                    <div class="flex grow h-0.5 bg-ring-2" />
+                    <p class="text-xs opacity-50 font-bold uppercase font-default"> Details</p>
+                    <div class="flex grow h-0.5 bg-ring-2" />
+                </span>
+                <span> <b class="text-code font-light">Team Name</b>: {{ editPayload?.title }} </span>
+                <span> <b class="text-code font-light">Note</b>: <b class="text-danger-2">This action cannot be
+                        undone!</b>
+                </span>
+            </div>
+        </div>
+    </div>
 </template>
 
 

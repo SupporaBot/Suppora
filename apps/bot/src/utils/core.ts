@@ -1,7 +1,6 @@
 import { Client } from "discord.js";
 import { Colors as DJSColors } from "discord.js";
 import { BotEmojiData, BotEmojiName } from "./bot/emojis";
-import { env } from "process";
 
 export const CORE = {
     /** Currently available Discord Bot {@linkcode Client} (if any). */

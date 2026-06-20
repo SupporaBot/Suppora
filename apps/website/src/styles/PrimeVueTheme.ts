@@ -112,6 +112,13 @@ const DynamicColorModeTokens = {
                     },
                 }
             }
+        },
+
+        dialog: {
+            css: `
+              .p-dialog {
+                overflow-y: auto !important;
+              }`
         }
 
     }

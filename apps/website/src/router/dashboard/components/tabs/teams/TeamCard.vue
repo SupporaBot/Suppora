@@ -14,7 +14,14 @@
 
     // Vars:
     const t = computed(() => props.team)
-    const roleIssues = ref(false)
+
+    const guildRoles = computed(() => dashboard.guildData.roles.state ?? [])
+    const onCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_on_call))
+    const offCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_off_call))
+
+    const roleIssues = computed(() => {
+        return false
+    })
 
 
     // Start Edit - Emit:
@@ -42,12 +49,13 @@
             </div>
 
             <span class="w-fit h-fit my-auto bg-bg-5/70 px-1.5 rounded">
-                <p class="text-text-2 text-xs w-full truncate"> #1 </p>
+                <p :title="t?.id" class="text-text-2 text-xs w-full truncate"> #{{ t?.id?.split('-')?.[0] }} </p>
             </span>
 
 
-            <Button title="View Ticket" @click="emits('startEdit', props.team.id, { title: t?.title })" unstyled
-                class="button-base bg-bg-4 ml-auto gap-1">
+            <Button title="View Ticket"
+                @click="emits('startEdit', props.team.id, { title: t?.title, color: String(onCallRole?.color?.toString(16) ?? '000000')?.replace('0x', '') })"
+                unstyled class="button-base bg-bg-4 ml-auto gap-1">
                 <Icon icon="mdi:pencil-outline" />
                 <p class="text-xs hidden sm:block"> Edit </p>
                 <p class="text-xs hidden md:block"> Team </p>
@@ -58,8 +66,7 @@
         <div class="w-full flex items-center flex-wrap flex-row gap-2 pb-0.5">
 
             <!-- Assigned Staff -->
-
-            <span class="w-fit bg-bg-4 rounded-xl p-1 px-1.5 gap-1 flex items-center flex-wrap">
+            <span hidden class="w-fit bg-bg-4 rounded-xl p-1 px-1.5 gap-1 flex items-center flex-wrap">
                 <Icon icon="mdi:users" class="opacity-75" />
                 <p class="text-text-2 font-medium text-sm"> ? Assigned </p>
                 <DashboardTooltip placement="bottom" default_class="size-3.5!">
@@ -72,10 +79,7 @@
                 </DashboardTooltip>
             </span>
 
-
-
-            <!-- Panel -->
-
+            <!-- Assigned Panel(s) -->
             <span class="w-fit bg-bg-4 rounded-xl p-1 px-1.5 gap-1 flex items-center flex-wrap">
                 <Icon icon="mdi:newspaper-variant" class="opacity-75" />
                 <p class="text-text-2 font-medium text-sm"> 0 Panel(s) </p>
@@ -88,8 +92,6 @@
                     </template>
                 </DashboardTooltip>
             </span>
-
-
 
             <!-- Role Issues -->
             <span v-if="roleIssues" class="w-fit bg-bg-4 rounded-xl p-1 gap-1 px-1.5 flex items-center flex-wrap">
@@ -110,9 +112,24 @@
                 <p class="text-text-2 font-medium text-sm"> In Sync </p>
                 <DashboardTooltip placement="bottom" default_class="size-3.5!">
                     <template #tip>
-                        <div class="max-w-30 text-wrap">
-                            <Icon icon="mdi:info" class="inline opacity-80 size-3.5" />
-                            No issues with this team's Discord server roles!
+                        <div class="max-w-35 w-fit text-wrap flex flex-col gap-1">
+                            <span>
+                                <Icon icon="mdi:info" class="inline opacity-80 size-3.5" />
+                                No issues with team's Discord server roles:
+                            </span>
+                            <div>
+                                - <span class="text-code w-fit text-[11px]"
+                                    :style="{ color: ('#' + onCallRole?.color?.toString(16)) }">
+                                    @{{ onCallRole?.name }}
+                                </span>
+
+                            </div>
+                            <div>
+                                - <span class="text-code w-fit text-[11px]"
+                                    :style="{ color: ('#' + offCallRole?.color?.toString(16)) }">
+                                    @{{ offCallRole?.name }}
+                                </span>
+                            </div>
                         </div>
                     </template>
                 </DashboardTooltip>

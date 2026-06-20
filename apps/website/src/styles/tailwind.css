@@ -61,7 +61,7 @@
 
 
 @utility text-code {
-    @apply bg-bg-3 rounded font-semibold px-0.75 py-px;
+    @apply bg-bg-3 rounded font-medium px-0.75 py-px;
     &.link {
         @apply hover:underline hover:text-brand-2 cursor-pointer;
     }

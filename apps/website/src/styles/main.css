@@ -24,3 +24,7 @@ body {
     flex-wrap: wrap;
     min-height: 100dvh;
 }
+
+* {
+    @apply font-default;
+}

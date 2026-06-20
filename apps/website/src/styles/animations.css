@@ -49,7 +49,9 @@
 
 /* Basic - Active/Timing */
 .fade-enter-active,
-.fade-leave-active,
+.fade-leave-active {
+    transition: opacity ease 0.3s;
+}
 .zoom-enter-active,
 .zoom-leave-active,
 .blur-enter-active,

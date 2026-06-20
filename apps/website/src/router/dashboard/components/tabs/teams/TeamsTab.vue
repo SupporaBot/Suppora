@@ -2,6 +2,7 @@
     import { useDashboardStore } from '@/stores/dashboard/dashboard';
     import TeamCard from './TeamCard.vue';
     import TeamFormDialog, { type TeamDialogFormSchema } from './TeamFormDialog.vue';
+    import { URLS } from '@/stores/layout';
 
     const randomId = computed(() => crypto.randomUUID())
 
@@ -83,6 +84,15 @@
             </span>
 
         </div>
+
+        <a :href="URLS.documentation + '/teams'" target="_blank"
+            class="mt-3 group relative text-text-2 w-fit mx-auto cursor-pointer flex-center gap-0.5 flex-row">
+
+            <Icon icon="mdi:info" class="opacity-75 size-3.5" />
+            <p class=" text-xs text-center"> Learn more about <b class="">Teams</b></p>
+
+            <div class="absolute w-0 group-hover:w-full! transition-all  -bottom-0.75 h-0.5 bg-ring-2" />
+        </a>
 
         <!-- Team Form Dialog -->
         <TeamFormDialog v-model:is-visible="teamDialogVisible" v-model:edit-payload="teamDialogEditPayload" />
