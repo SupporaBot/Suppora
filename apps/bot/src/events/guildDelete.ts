@@ -29,7 +29,7 @@ export default <EventData>{
 
         } catch (err) {
             // FAILURE - Guild Removed Event:
-            log.for('Bot').error(`[Guild Removed] FAILED to process event! - See Details!`, { err, guildId: g?.id, critical: true })
+            log.for('Bot').error(`[Guild Removed ❌] FAILED to process event! - See Details!`, { err, guildId: g?.id, critical: true })
         }
 
     }

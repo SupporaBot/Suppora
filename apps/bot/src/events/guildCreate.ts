@@ -44,7 +44,7 @@ export default <EventData>{
 
         } catch (err) {
             // FAILURE - Guild Added Event:
-            log.for('Bot').error(`[Guild Added] FAILED to process event! - See Details!`, { err, guildId: g?.id, critical: true })
+            log.for('Bot').error(`[Guild Added ⚠️] FAILED to process event! - See Details!`, { err, guildId: g?.id, critical: true })
         }
 
     }
