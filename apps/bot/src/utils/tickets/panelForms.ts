@@ -4,7 +4,8 @@ import { ComponentType, LabelBuilder, TextInputStyle } from "discord.js"
 /** Resolves {@linkcode LabelBuilder} Components from {@linkcode PanelFormData} */
 export function resolveModalFormComponents(modalData: PanelFormData) {
     let r: LabelBuilder[] = []
-    for (const q of modalData.questions) {
+    const sortedQuestions = modalData.questions?.sort((a, b) => a.index - b.index)
+    for (const q of sortedQuestions) {
         if (q.type == 'TextInput' || q.type == 'ParagraphInput') {
             r.push(new LabelBuilder({
                 label: q.label.name,

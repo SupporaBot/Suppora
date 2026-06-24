@@ -57,7 +57,6 @@ export async function beginTests() {
         // const testGuild = await CORE.bot.guilds.fetch(applicationTestingGuildId)
         // console.log(await sendWithFallback(testGuild, testPanelMessage))
 
-        // console.log(r)
 
         // Completed - Debug:
         console.info(`(i) Development Tests -- Completed at ${DateTime.local()?.toFormat('F')}`)

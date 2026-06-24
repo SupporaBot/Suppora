@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIMediaGalleryItem, Attachment, AttachmentBuilder, ButtonBuilder, ButtonData, ButtonInteraction, ButtonStyle, ChannelType, ComponentType, ContainerBuilder, DiscordjsError, FileBuilder, LabelBuilder, LabelModalData, MediaGalleryBuilder, MessageFlags, ModalBuilder, ModalSubmitInteraction, SeparatorBuilder, TextChannel, TextDisplayBuilder, ThreadAutoArchiveDuration } from "discord.js";
+import { ActionRowBuilder, Attachment, ButtonBuilder, ButtonData, ButtonInteraction, ButtonStyle, ChannelType, ComponentType, ContainerBuilder, DiscordjsError, MessageFlags, ModalBuilder, ModalSubmitInteraction, SeparatorBuilder, TextChannel, TextDisplayBuilder, ThreadAutoArchiveDuration } from "discord.js";
 import { log } from "../../utils/logs/logs";
 import { BotErrorMessageContainer, DefaultBotFooter, TextBuilder } from "../../types/customBuilders";
 import { supabase } from "../../utils/database/supabase";
@@ -27,7 +27,7 @@ export default <ButtonData>{
                     // Timeout Fetch DB:
                     const { data, error } = await Promise.race([
                         new Promise<never>((_, r) => setTimeout(() => r(`DB couldn't fetch modal data in 2.5s for new ticket interaction`), 2_500)),
-                        supabase.from('guilds').select('*').eq('id', '1379160686629880028').single()
+                        supabase.from('guilds').select('*').eq('id', i.guildId).single()
                     ])
                     if (error || !data) throw new Error(`[DB Timeout/Error] Couldn't find panel data for new ticket interaction! (attempt 1)`, { cause: { data, error } })
                     // DB Ready - SHOW & AWAIT MODAL:
@@ -38,7 +38,7 @@ export default <ButtonData>{
                     // Defer -> Fetch DB -> "Continue" Msg -> Await Response -> Modal:
                     await i?.deferReply({ flags: MessageFlags.Ephemeral })?.catch(() => { })
                     // Fetch DB (again)
-                    const { data, error } = await supabase.from('guilds').select('*').eq('id', '1379160686629880028').single()
+                    const { data, error } = await supabase.from('guilds').select('*').eq('id', i.guildId).single()
                     if (error || !data) throw new Error(`[DB Failed] Couldn't find panel data for new ticket interaction!`, { cause: { data, error } })
 
                     // Build/Send "Continue" Message:
@@ -170,7 +170,7 @@ export default <ButtonData>{
                         })
                     } else {
                         log.for('Bot').error(`[New Ticket - Form Submission] FAILED Modal interaction!`, { userId: i?.user?.id, guildId: i?.guildId, err })
-                        const errMsg = new BotErrorMessageContainer('ERROR', '⚠  Failed creating ticket!', `Unfortunately somewhere along the way we failed to create your new ticket! \nIf this issue persist, please get in contact with bot support.`)
+                        const errMsg = new BotErrorMessageContainer('ERROR', '⚠️  Failed creating ticket!', `Unfortunately somewhere along the way we failed to create your new ticket! \nIf this issue persist, please get in contact with bot support.`)
                         return await i?.followUp({
                             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
                             components: [errMsg as any]
@@ -223,7 +223,7 @@ export default <ButtonData>{
                                 new ActionRowBuilder({
                                     components: [
                                         new ButtonBuilder({
-                                            custom_id: 'close-ticket:${ticket_it}',
+                                            custom_id: 'close-ticket:${ticket_id}',
                                             style: ButtonStyle.Secondary,
                                             label: '✖ Close Ticket'
                                         })
@@ -252,7 +252,7 @@ export default <ButtonData>{
                                     attachments.set(`Question ${index}`, attached)
                                     answer = attached?.map(a => a.url)?.join(', ')
                                 } else {
-                                    answer = "No Files Attached"
+                                    answer = "-# *No Files Attached*"
                                 }
                             } else if (type == ComponentType.MentionableSelect
                                 || type == ComponentType.RoleSelect
@@ -268,12 +268,14 @@ export default <ButtonData>{
                                 for (const c of field?.channels ?? []) {
                                     mentions.push(`<#${c[1]?.id}>`)
                                 }
-                                answer = mentions.join(`, `)
+                                mentions.length
+                                    ? answer = mentions.join(`, `)
+                                    : answer = '-# *None Selected*';
                             } else if ('values' in field && type != ComponentType.TextInput) {
-                                answer = field.values?.join(', ')
+                                answer = field.values?.join(', ')?.trim() || '-# *None Selected*'
                             } else if ('value' in field) {
-                                answer = field.value
-                            } else answer = '?';
+                                answer = field?.value || '-# *No Response*'
+                            } else answer = '-# *No Response*';
 
                             // Return Full Data:
                             return {
@@ -315,11 +317,12 @@ export default <ButtonData>{
                         }
 
                     }
+
                 } catch (err) {
                     // FAILED - Creating Thread - Log & Respond Error:
                     log.for('Bot').error(`[Tickets - Create]: Failed to create a new ticking from the "new_ticket" interaction!`, { userId: i?.user?.id, guildId: i?.guildId, err })
                     return submission.followUp({
-                        components: <any>[new BotErrorMessageContainer('ERROR', '⚠ Ticket Creation Failed!')],
+                        components: <any>[new BotErrorMessageContainer('ERROR', '⚠️ Ticket Creation Failed!')],
                         flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
                     })
                 }
@@ -329,7 +332,7 @@ export default <ButtonData>{
         } catch (err) {
             // ROOT Interaction Failed - Log & Respond w/ Alert:
             log.for('Bot').error(`[New Ticket] FAILED Button interaction!`, { userId: i?.user?.id, guildId: i?.guildId, err })
-            const errMsg = new BotErrorMessageContainer('ERROR', '⚠  Failed creating ticket!', `Unfortunately somewhere along the way we failed to create your new ticket! \nIf this issue persist, please get in contact with bot support.`)
+            const errMsg = new BotErrorMessageContainer('ERROR', '⚠️  Failed creating ticket!', `Unfortunately somewhere along the way we failed to create your new ticket! \nIf this issue persist, please get in contact with bot support.`)
             if (i?.replied || i?.deferred) {
                 await i.followUp({
                     components: [errMsg as any],
