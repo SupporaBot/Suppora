@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@cloudflare/vite-plugin": "^1.40.1",
+    "@cloudflare/vite-plugin": "^1.42.2",
     "@floating-ui/vue": "^2.0.0",
     "@primeuix/themes": "^2.0.3",
     "@primevue/forms": "^4.5.5",
@@ -45,7 +45,7 @@
     "vite": "^8.0.3",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.6",
-    "wrangler": "^4.99.0"
+    "wrangler": "^4.104.0"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
