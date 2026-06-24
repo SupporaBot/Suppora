@@ -15,6 +15,9 @@
     const notifier = useNotifier()
     const confirm = useConfirm()
 
+    const guildRoles = computed(() => dashboard.guildData.roles.state)
+    const guildTeams = computed(() => dashboard.guildData.teams.state)
+
     // Modal Visibility:
     const isVisible = defineModel<boolean>('isVisible')
 
@@ -35,6 +38,16 @@
 
     // Editing Team Id:
     const editingTeamId = ref<string | undefined>(undefined)
+
+    // Editing Team Roles:
+    const editingTeamRoles = computed(() => {
+        if (editingTeamId.value) {
+            const teamData = guildTeams.value?.find(t => t.id == editingTeamId.value)
+            const onCallRole = guildRoles.value?.find(r => r.id == teamData?.role_id_on_call)
+            const offCallRole = guildRoles.value?.find(r => r.id == teamData?.role_id_off_call)
+            return { onCall: onCallRole, offCall: offCallRole }
+        } else return undefined
+    })
 
     // Start/Watch Editing Payload:
     watch(editPayload, async (p) => {
@@ -65,7 +78,7 @@
             colorInputValue.value = defaultTeamRoleColor
             formRef.value?.setFieldValue('color', defaultTeamRoleColor)
         }
-    })
+    }, { immediate: true })
 
 
     // Reset Form/Dialog Fn:
@@ -199,7 +212,7 @@
         }
     }
 
-    // On Un/mounted:
+    // On Form / Dialog - (Un)Mounted:
     watch(isVisible, async (visible) => {
         if (!visible) reset()
         else {
@@ -257,7 +270,7 @@
                                 <p> Color </p>
                             </label>
 
-                            <ColorInput :v-model:value="colorInputValue" />
+                            <ColorInput v-model:value="colorInputValue" />
 
                             <ul v-if="$form.color?.invalid" v-for="err in $form.color?.errors"
                                 class="flex flex-col gap-1.25 px-1 list-none list-inside">
@@ -310,14 +323,38 @@
         <div class=" flex-col flex gap-1 w-full">
             <span> You're about to <u>permanently delete</u> this <b class="text-code font-semibold">Team</b>!</span>
 
+            <!-- Deletion Details -->
             <div class="text-sm mt-4 w-full flex flex-col gap-2">
                 <span class="w-full pb-2 flex flex-row items-center gap-1.5">
                     <div class="flex grow h-0.5 bg-ring-2" />
                     <p class="text-xs opacity-50 font-bold uppercase font-default"> Details</p>
                     <div class="flex grow h-0.5 bg-ring-2" />
                 </span>
+                <!-- Team Name -->
                 <span> <b class="text-code font-light">Team Name</b>: {{ editPayload?.title }} </span>
-                <span> <b class="text-code font-light">Note</b>: <b class="text-danger-2">This action cannot be
+                <!-- Team Roles -->
+                <div class="w-full flex-col flex">
+                    <span><b class="text-code font-light w-fit!"> Roles</b>:</span>
+                    <span class="font-light text-xs pl-0.5 pt-0.75 opacity-75 italic">
+                        * This will delete the following roles from this Discord server! *
+                    </span>
+                    <ul class="pl-1.5 space-y-1.25 list-inside list-disc text-xs">
+                        <li>
+                            <span class="text-code"
+                                :style="{ color: `#${editingTeamRoles?.onCall?.color?.toString(16) || 'cc7754'}` }">
+                                {{ editingTeamRoles?.onCall?.name || 'Unknown / Deleted' }}
+                            </span>
+                        </li>
+                        <li>
+                            <span class="text-code"
+                                :style="{ color: `#${editingTeamRoles?.offCall?.color?.toString(16) || 'cc7754'}` }">
+                                {{ editingTeamRoles?.offCall?.name || 'Unknown / Deleted' }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Permanent Alert -->
+                <span> <b class="text-code font-light ">Note</b>: <b class="text-danger-2">This action cannot be
                         undone!</b>
                 </span>
             </div>

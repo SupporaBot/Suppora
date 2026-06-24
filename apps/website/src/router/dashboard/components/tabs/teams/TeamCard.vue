@@ -15,14 +15,36 @@
     // Vars:
     const t = computed(() => props.team)
 
+    // Guild Data:
     const guildRoles = computed(() => dashboard.guildData.roles.state ?? [])
     const onCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_on_call))
     const offCallRole = computed(() => guildRoles.value.find(r => r?.id == t.value.role_id_off_call))
-    const roleColorNormalized = computed(() => String(onCallRole.value?.color?.toString(16)) || '717ff0')
 
+    // Role Color(s)
+    const roleColorNormalized = computed(() => String(onCallRole.value?.color?.toString(16)) || '717ff0')
+    const roleIconDynamicColor = computed(() => {
+        if (!roleColorNormalized.value) return 'white'
+        const hex = roleColorNormalized.value.replace('#', '')
+        const r = parseInt(hex.substring(0, 2), 16)
+        const g = parseInt(hex.substring(2, 4), 16)
+        const b = parseInt(hex.substring(4, 6), 16)
+        // Perceived luminance formula
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b)
+        return luminance > 160 ? 'black' : 'white'
+    })
+
+    // Role Issue(s) / Unsynced:
     const roleIssues = computed(() => {
+        // Role Unknown / Inaccessible / Deleted:
+
+        // Role Name - Out of Sync:
+
+        // Role Color - Out of Sync:
+
         return false
     })
+
+
 
     // Start Edit - Util:
     const startTeamEdit = () => {
@@ -45,23 +67,25 @@
 
         <div class="w-full flex gap-1.75 py-1.25">
 
-            <div class="flex-center items-center! gap-1.5">
+            <div class="flex flex-row flex-wrap items-center! gap-1.5">
                 <img hidden :src="'./discord.png'" class="size-7 rounded-md" />
                 <span class="size-7 rounded-md flex-center" :style="{ background: `#${roleColorNormalized}` }">
-                    <Icon icon="iconamoon:star-duotone" class="size-4.75" />
+                    <Icon icon="ic:baseline-people" class="size-4.75" :style="{ color: `${roleIconDynamicColor}` }" />
                 </span>
                 <p class="text-text-2 font-semibold text-lg">
                     {{ t?.title ?? '?' }}
                 </p>
-
+                <span class="w-fit h-fit my-auto bg-bg-5/50 px-1.5 rounded">
+                    <p :title="t?.id" class="text-text-2/70 text-[10px] w-full truncate"> #{{ t?.id?.split('-')?.[0] }}
+                    </p>
+                </span>
             </div>
 
-            <span class="w-fit h-fit my-auto bg-bg-5/70 px-1.5 rounded">
-                <p :title="t?.id" class="text-text-2 text-xs w-full truncate"> #{{ t?.id?.split('-')?.[0] }} </p>
-            </span>
 
 
-            <Button title="Edit Team" @click="startTeamEdit" unstyled class="button-base bg-bg-4 ml-auto gap-1">
+
+            <Button title="Edit Team" @click="startTeamEdit" unstyled
+                class="button-base max-sm:aspect-square max-sm:size-7.5 bg-bg-4 ml-auto gap-1">
                 <Icon icon="mdi:pencil-outline" />
                 <p class="text-xs hidden sm:block"> Edit </p>
                 <p class="text-xs hidden md:block"> Team </p>

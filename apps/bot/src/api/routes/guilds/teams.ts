@@ -37,11 +37,13 @@ teamsRouter.post('/', verifyToken, verifyGuildMembership(true), async (req, res)
         const [onCallRole, offCallRole] = await Promise.all([
             guild.roles.create({
                 name: `${data.title} - On Call`,
-                color: roleColor
+                color: roleColor,
+                permissions: BigInt(0)
             }),
             guild.roles.create({
                 name: `${data.title} - Off Call`,
-                color: roleColor
+                color: roleColor,
+                permissions: BigInt(0),
             })
         ])
 

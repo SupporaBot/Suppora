@@ -20,7 +20,7 @@
 
 
 <template>
-    <main class="gap-2.5 flex pb-5 flex-col w-full grow">
+    <main class="gap-2.5 mb-5 flex flex-col w-full grow">
 
         <!-- Teams Table -->
         <div
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Subheading - Ticket Count -->
-                <span v-if="teams?.length" class="text-text-3 text-sm w-full">
+                <span v-if="teams?.length" class="text-text-3 text-xs w-full">
                     Total Teams: <b class="font-semibold">{{ teams?.length ?? 0 }}</b>
                 </span>
 
@@ -87,6 +87,7 @@
 
         </div>
 
+        <!-- Learn More / Docs - Teams URL -->
         <a :href="URLS.documentation + '/teams'" target="_blank"
             class="mt-3 group relative text-text-2 w-fit mx-auto cursor-pointer flex-center gap-0.5 flex-row">
 
