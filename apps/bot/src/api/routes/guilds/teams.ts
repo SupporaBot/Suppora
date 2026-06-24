@@ -6,7 +6,7 @@ import * as z from 'zod'
 import { HttpStatusCode } from 'axios'
 import { supabase } from '../../../utils/database/supabase'
 import { verifyGuildMembership } from '../../middleware/verifyGuildMember'
-import { DiscordAPIError, Guild } from 'discord.js'
+import { DiscordAPIError, DiscordjsErrorCodes, DiscordjsTypeError, Guild } from 'discord.js'
 
 const teamsRouter = express.Router({ mergeParams: true })
 
@@ -99,9 +99,24 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
             .eq('id', teamId)
             .single()
         if (existingTeamErr || !existingTeam) throw new Error('Failed to fetch existing team for update from database!', { cause: existingTeamErr })
-
-        // Update Server Roles:
         const roleColor = (parseInt(String(data?.color)?.replace('#', ''), 16) || 0x717ff0)
+
+        // UTIL - Re-Create Team Role:
+        async function reCreateRole(type: 'On' | 'Off') {
+            try {
+                const newRole = await guild.roles.create({
+                    name: `${data.title} - ${type} Call`,
+                    color: roleColor,
+                    permissions: BigInt(0),
+                })
+                return newRole
+            } catch (reCreateRoleErr) {
+                throw new Error(`[Re-Create Team Role] During Edit/Patch FAILED to re-create role due to repeated errors!`, { cause: { reCreateError: reCreateRoleErr, type: type + ' Call' } })
+            }
+        }
+
+        // UTIL - Update Team Role:
+
         async function updateRole(id: string, type: 'On' | 'Off') {
             try {
                 // Edit Existing Role:
@@ -113,18 +128,20 @@ teamsRouter.patch('/:teamId', verifyToken, verifyGuildMembership(true), async (r
             } catch (editErr) {
                 // Edit Role Failed:
                 if (editErr instanceof DiscordAPIError) {
-                    if (editErr.code == 10011 || editErr.code == 10007) {
+                    if (editErr.code == 10011 || editErr.code == 10007 || editErr.code == 'InvalidType') {
                         // Role Deleted/Missing:
-                        const newRole = await guild.roles.create({
-                            name: `${data.title} - ${type} Call`,
-                            color: roleColor
-                        })
+                        const newRole = await reCreateRole(type)
                         return newRole
                     } else if (editErr.code == 50013 || editErr.code == 50001) {
                         // Cannot Edit due to HIERARCHY/Permissions:
                         throw new Error(`[Edit Team Role]: Cannot edit team role(id: ${id}) due to ROLE HIERARCHY/PERMISSIONS!`, { cause: editErr })
                     }
                 }
+                if (editErr instanceof DiscordjsTypeError && editErr.code == DiscordjsErrorCodes.InvalidType) {
+                    // INVALID ROLE TYPE (Role Deleted/Missing):
+                    return await reCreateRole(type)
+                }
+                // Unknown Edit Error:
                 throw editErr
             }
         }

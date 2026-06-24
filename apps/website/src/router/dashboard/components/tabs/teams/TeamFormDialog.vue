@@ -88,7 +88,7 @@
         editPayload.value = undefined
         formMode.value = 'new'
         submitState.value = 'idle'
-        colorInputValue.value = null
+        colorInputValue.value = defaultTeamRoleColor
     }
 
 
@@ -342,13 +342,13 @@
                         <li>
                             <span class="text-code"
                                 :style="{ color: `#${editingTeamRoles?.onCall?.color?.toString(16) || 'cc7754'}` }">
-                                {{ editingTeamRoles?.onCall?.name || 'Unknown / Deleted' }}
+                                @{{ editingTeamRoles?.onCall?.name || 'Unknown / Deleted' }}
                             </span>
                         </li>
                         <li>
                             <span class="text-code"
                                 :style="{ color: `#${editingTeamRoles?.offCall?.color?.toString(16) || 'cc7754'}` }">
-                                {{ editingTeamRoles?.offCall?.name || 'Unknown / Deleted' }}
+                                @{{ editingTeamRoles?.offCall?.name || 'Unknown / Deleted' }}
                             </span>
                         </li>
                     </ul>
