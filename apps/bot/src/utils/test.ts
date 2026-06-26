@@ -23,7 +23,6 @@ export async function beginTests() {
         console.info(`(i) Development Tests -- Executing at ${DateTime.local()?.toFormat('F')}`)
 
         // Test here:
-
         const testPanelMessage = new ContainerBuilder({
             accent_color: COLORS.LuminousVividPink,
             components: <any>[
@@ -36,7 +35,7 @@ export async function beginTests() {
                     components: [
                         new ButtonBuilder({
                             style: ButtonStyle.Primary,
-                            label: '🎟 Create Ticket',
+                            label: '🎫 Create Ticket',
                             custom_id: `new_ticket:EX_PANEL_ID`
                         }),
                         new ButtonBuilder({
@@ -54,8 +53,11 @@ export async function beginTests() {
             ]
         })
 
-        // const testGuild = await CORE.bot.guilds.fetch(applicationTestingGuildId)
-        // console.log(await sendWithFallback(testGuild, testPanelMessage))
+        const testGuild = await CORE.bot.guilds.fetch(applicationTestingGuildId)
+        // console.log(await sendWithFallback(testGuild, testPanelMessage, {
+        //     disableOwnerDm: true,
+        //     preferredChannelId: '1519450000277377267'
+        // }))
 
 
         // Completed - Debug:

@@ -3,8 +3,8 @@ import { log } from "../../utils/logs/logs";
 import { BotErrorMessageContainer, DefaultBotFooter, TextBuilder } from "../../types/customBuilders";
 import { supabase } from "../../utils/database/supabase";
 import { COLORS } from "../../utils/core";
-import { exPanel, PanelFormData, PanelQuestion } from "@suppora/shared";
-import { resolveModalFormComponents } from "../../utils/tickets/panelForms";
+import { exPanel, PanelFormData } from "@suppora/shared";
+import { resolveModalFormComponents, resolveModelFormResponse } from "../../utils/tickets/panelForms";
 import { DateTime } from "luxon";
 
 
@@ -20,6 +20,7 @@ export default <ButtonData>{
             const [_, panelId] = i.customId?.split(':')
             if (!panelId) throw new Error(`Failed to create new ticket - Missing/invalid panel_id in button's custom_id!`, { cause: { customId: i?.customId, guildId: i?.guildId } })
 
+            const ticketFormData: PanelFormData | undefined = exPanel // ! FIX Panel Data
 
             // Step 1: Load Panel - Fetch From DB - Safety Time Limit:
             async function preparePanelData() {
@@ -30,8 +31,11 @@ export default <ButtonData>{
                         supabase.from('guilds').select('*').eq('id', i.guildId).single()
                     ])
                     if (error || !data) throw new Error(`[DB Timeout/Error] Couldn't find panel data for new ticket interaction! (attempt 1)`, { cause: { data, error } })
-                    // DB Ready - SHOW & AWAIT MODAL:
-                    await awaitModalSubmission(exPanel, i) // ! FIX Panel Data
+                    // DB Ready - IF Ticket Form - SHOW & AWAIT MODAL:
+                    if (ticketFormData)
+                        await awaitModalSubmission(ticketFormData, i)
+                    // ELSE - Create Ticket Immediately:
+                    else await createTicketThread()
 
                 } catch (err) {
                     // Timeout / Db Failure - New Interaction "Flow":
@@ -46,7 +50,7 @@ export default <ButtonData>{
                         components: [new ContainerBuilder({
                             accent_color: COLORS.LuminousVividPink,
                             components: <any>[
-                                new TextBuilder(`### 🎟  Creating Ticket — Begin Form`),
+                                new TextBuilder(`### 🎫  Creating Ticket — Begin Form`),
                                 new TextBuilder(`> We've prepared the **form you must complete** in order to create this new ticket! \nClick on the "Continue" button below to get started.`),
                                 new DefaultBotFooter({ trailing: `<@${i?.user?.id}>` }),
                                 new SeparatorBuilder(),
@@ -83,8 +87,11 @@ export default <ButtonData>{
                             // End Collector
                             continueCollector.stop('continued')
                             await i?.deleteReply(continueMsg)?.catch((e) => console.warn('Failed to delete reply after continuing', e))
-                            // DB Ready & Continuing - SHOW & AWAIT MODAL:
-                            await awaitModalSubmission(exPanel, ci) // ! FIX Panel Data
+                            // DB Ready / Continued - IF Ticket Form - SHOW & AWAIT MODAL:
+                            if (ticketFormData)
+                                await awaitModalSubmission(ticketFormData, ci)
+                            // ELSE - Create Ticket Immediately:
+                            else await createTicketThread()
                         }
                         // IF Canceled - End Collector - Edit Continue Msg:
                         if (ci.customId == 'ticket-modal-cancel') {
@@ -118,7 +125,7 @@ export default <ButtonData>{
                                     new ContainerBuilder({
                                         accent_color: COLORS.Orange,
                                         components: <any>[
-                                            new TextBuilder(`### 🎟  New Ticket — Form Expired`),
+                                            new TextBuilder(`### 🎫  New Ticket — Form Expired`),
                                             new SeparatorBuilder(),
                                             new TextBuilder(`Unfortunately you **ran out of time** to start the ticket form for your new ticket request! \n-# **Tip**: To continue creating a new ticket, start this [interaction](${i?.message?.url}) over.`)
                                         ]
@@ -166,7 +173,7 @@ export default <ButtonData>{
                         // Modal Submission Timeout:
                         return await i?.followUp({
                             flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
-                            components: <any>[new BotErrorMessageContainer('WARN', '🎟  New Ticket — Form Failed', `Unfortunately you **ran out of time** to complete the ticket form for your new ticket request! \n-# **Tip**: To continue creating a new ticket, please start this [interaction](${i?.message?.url}) over.`)]
+                            components: <any>[new BotErrorMessageContainer('WARN', '🎫  New Ticket — Form Failed', `Unfortunately you **ran out of time** to complete the ticket form for your new ticket request! \n-# **Tip**: To continue creating a new ticket, please start this [interaction](${i?.message?.url}) over.`)]
                         })
                     } else {
                         log.for('Bot').error(`[New Ticket - Form Submission] FAILED Modal interaction!`, { userId: i?.user?.id, guildId: i?.guildId, err })
@@ -197,25 +204,26 @@ export default <ButtonData>{
                     })
 
                     // Respond/Redirect User to New Thread:
-                    await i.followUp({
+                    const createdReply = {
                         components: [new ContainerBuilder({
                             accent_color: COLORS.Blurple,
                             components: <any>[
-                                new TextBuilder(`### 🎟 Ticket Created! `),
+                                new TextBuilder(`### 🎫 Ticket Created! `),
                                 new SeparatorBuilder(),
                                 new TextBuilder(`> Check out your newly **created ticket**: ${thread?.url}`),
                                 new DefaultBotFooter({ trailing: `<@${i?.user?.id}>` })
                             ]
                         })],
                         flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
-                    })
+                    };
+                    (i.replied || i.deferred) ? await i.followUp(createdReply) : i.reply(createdReply)
 
                     // Send Initial Ticket Details:
                     await thread.send({
                         components: [new ContainerBuilder({
                             accent_color: COLORS.Purple,
                             components: <any>[
-                                new TextBuilder(`## 🎟  Ticket Details:`),
+                                new TextBuilder(`## 🎫  Ticket Details:`),
                                 new SeparatorBuilder(),
                                 new TextBuilder(`**Created By**:\n> <@${creator?.id}>\n**Created at**:\n> <t:${DateTime?.utc()?.toUnixInteger()}:f>\n> <t:${DateTime?.utc()?.toUnixInteger()}:R>\n**Joined Staff**:\n> *Nobody Yet!*`),
                                 new DefaultBotFooter(),
@@ -236,62 +244,8 @@ export default <ButtonData>{
 
                     // Parse Modal Questions:
                     if (submission) {
-
-                        const fieldKeys = [...submission.fields.fields.keys()]
-                        let attachments: Map<string, Attachment[]> = new Map()
-
-                        const resolveQuestion = (custom_id: string) => {
-                            const field = submission.fields.getField(custom_id)
-                            const index = Number(custom_id?.split('question-')[1] ?? 0)
-                            const questionData = exPanel.questions.find(q => q.index == index) ?? {} as PanelQuestion
-                            const { type } = field
-                            let answer = undefined
-                            if (type == ComponentType.FileUpload) {
-                                const attached = [...field.attachments?.values() ?? []]
-                                if (attached?.length) {
-                                    attachments.set(`Question ${index}`, attached)
-                                    answer = attached?.map(a => a.url)?.join(', ')
-                                } else {
-                                    answer = "-# *No Files Attached*"
-                                }
-                            } else if (type == ComponentType.MentionableSelect
-                                || type == ComponentType.RoleSelect
-                                || type == ComponentType.UserSelect
-                                || type == ComponentType.ChannelSelect) {
-                                let mentions = []
-                                for (const u of field?.users ?? []) {
-                                    mentions.push(`<@${u[1]?.id}>`)
-                                }
-                                for (const r of field?.roles ?? []) {
-                                    mentions.push(`<@&${r[1]?.id}>`)
-                                }
-                                for (const c of field?.channels ?? []) {
-                                    mentions.push(`<#${c[1]?.id}>`)
-                                }
-                                mentions.length
-                                    ? answer = mentions.join(`, `)
-                                    : answer = '-# *None Selected*';
-                            } else if ('values' in field && type != ComponentType.TextInput) {
-                                answer = field.values?.join(', ')?.trim() || '-# *None Selected*'
-                            } else if ('value' in field) {
-                                answer = field?.value || '-# *No Response*'
-                            } else answer = '-# *No Response*';
-
-                            // Return Full Data:
-                            return {
-                                ...questionData,
-                                answer
-                            }
-                        }
-                        const resolveAnsweredFormString = () => {
-                            let qs = []
-                            for (const customId of fieldKeys) {
-                                const q = resolveQuestion(customId)
-                                qs.push(`**${q.index}**. ${q.label.name}${q.label.description ? `\n-# ${q.label.description}` : ''}\n> ${q.answer} `)
-                            }
-                            return qs.join('\n')
-                        }
-
+                        const resolvedSubmission = resolveModelFormResponse(submission, ticketFormData) // ! Fix Panel Data Input
+                        // Send Form Responses to Ticket Thread:
                         await thread.send({
                             components: [
                                 new ContainerBuilder({
@@ -299,7 +253,7 @@ export default <ButtonData>{
                                     components: <any>[
                                         new TextBuilder(`## 📝  Ticket Form:`),
                                         new SeparatorBuilder(),
-                                        new TextBuilder(resolveAnsweredFormString()),
+                                        new TextBuilder(resolvedSubmission?.string || '⚠️ UNKNOWN FORM RESPONSE!'),
                                     ]
                                 })
                             ],
@@ -308,14 +262,13 @@ export default <ButtonData>{
                                 parse: []
                             }
                         })
-
-                        for (const [question, attached] of attachments.entries()) {
+                        // Follow Up w/ any included Attachments:
+                        for (const [question, attached] of resolvedSubmission.attachments?.entries()) {
                             await thread.send({
                                 content: `\`${question}\` - Attached ${attached?.length > 1 ? 'Files' : 'File'}:`,
                                 files: attached?.map(a => a.url)
                             })
                         }
-
                     }
 
                 } catch (err) {

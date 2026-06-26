@@ -1,5 +1,5 @@
-import { PanelFormData } from "@suppora/shared"
-import { ComponentType, LabelBuilder, TextInputStyle } from "discord.js"
+import { exPanel, PanelFormData, PanelQuestion } from "@suppora/shared"
+import { ComponentType, LabelBuilder, TextInputStyle, ModalSubmitInteraction, Attachment } from "discord.js"
 
 /** Resolves {@linkcode LabelBuilder} Components from {@linkcode PanelFormData} */
 export function resolveModalFormComponents(modalData: PanelFormData) {
@@ -130,4 +130,75 @@ export function resolveModalFormComponents(modalData: PanelFormData) {
         }
     }
     return r
+}
+
+/** Resolves Panel Response ({@linkcode ModalSubmitInteraction}) Data to readable `string` for ticket creation messages */
+export function resolveModelFormResponse(submission: ModalSubmitInteraction, panelData: PanelFormData) {
+    // Get Submission Field Keys:
+    const fieldKeys = [...submission.fields.fields.keys()]
+    let attachments: Map<string, Attachment[]> = new Map()
+
+    // UTIL - Resolve Question by Custom Id & Type:
+    const resolveQuestion = (custom_id: string) => {
+        // Field Data:
+        const field = submission.fields.getField(custom_id)
+        const index = Number(custom_id?.split('question-')[1] ?? 0)
+        const questionData = panelData.questions.find(q => q.index == index) ?? {} as PanelQuestion
+        const { type } = field
+        let answer = undefined
+        // File Uploads:
+        if (type == ComponentType.FileUpload) {
+            const attached = [...field.attachments?.values() ?? []]
+            if (attached?.length) {
+                attachments.set(`Question ${index}`, attached)
+                answer = attached?.map(a => a.url)?.join(', ')
+            } else {
+                answer = "-# *No Files Attached*"
+            }
+            // Mentionable(s), Roles, Users, & Channels:
+        } else if (type == ComponentType.MentionableSelect
+            || type == ComponentType.RoleSelect
+            || type == ComponentType.UserSelect
+            || type == ComponentType.ChannelSelect) {
+            let mentions = []
+            for (const u of field?.users ?? []) {
+                mentions.push(`<@${u[1]?.id}>`)
+            }
+            for (const r of field?.roles ?? []) {
+                mentions.push(`<@&${r[1]?.id}>`)
+            }
+            for (const c of field?.channels ?? []) {
+                mentions.push(`<#${c[1]?.id}>`)
+            }
+            mentions.length
+                ? answer = mentions.join(`, `)
+                : answer = '-# *None Selected*';
+            // Checkboxes, Radios, & String Selects
+        } else if ('values' in field && type != ComponentType.TextInput) {
+            answer = field.values?.join(', ')?.trim() || '-# *None Selected*'
+            // Text Inputs (or single selection from multiple select ^):
+        } else if ('value' in field) {
+            answer = field?.value || '-# *No Response*'
+        } else answer = '-# *No Response*';
+
+        // Return Full Data:
+        return {
+            ...questionData,
+            answer
+        }
+    }
+
+    // Resolve Each Form Question:
+    let qs = []
+    for (const customId of fieldKeys) {
+        const q = resolveQuestion(customId)
+        qs.push(`**${q.index}**. ${q.label.name}${q.label.description ? `\n-# ${q.label.description}` : ''}\n> ${q.answer} `)
+    }
+    const msgString = qs.join('\n')
+
+    // Return Results:
+    return {
+        string: msgString,
+        attachments
+    }
 }
