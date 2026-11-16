@@ -11,7 +11,7 @@
     "deploy-cmds": "tsx src/scripts/deploy-cmds.ts"
   },
   "dependencies": {
-    "@logtail/node": "^0.5.8",
+    "@logtail/node": "^0.6.0",
     "@supabase/supabase-js": "^2.102.1",
     "@suppora/shared": "*",
     "axios": "^1.17.0",
